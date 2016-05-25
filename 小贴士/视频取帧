@@ -1,0 +1,52 @@
+
+
+视频取帧
+取得每一帧
+============================================================================
+    [mImageGenerator generateCGImagesAsynchronouslyForTimes:[NSArray arrayWithObject:[NSValue valueWithCMTime:CMTimeMakeWithSeconds(time, NSEC_PER_SEC)]] completionHandler:  
+        ^(CMTime requestedTime, CGImageRef image, CMTime actualTime, AVAssetImageGeneratorResult result, NSError *error)  
+        {  
+       
+            NSLog(@"actual got image at time:%f", CMTimeGetSeconds(actualTime));  
+            if (image)  
+            {  
+                [CATransaction begin];  
+                [CATransaction setDisableActions:YES];  
+                [layer setContents:(id)image];  
+       
+                //UIImage *img = [UIImage imageWithCGImage:image];  
+                //UIImageWriteToSavedPhotosAlbum(img, self, nil, nil);  
+       
+                [CATransaction commit];  
+            }  
+        }];  
+       
+============================================================================
+
+
+如何取得第一帧
+
+AVFoundationframework 
+
+ CoreMediaframework
+
+============================================================================
+    + (UIImage*) thumbnailImageForVideo:(NSURL *)videoURL atTime:(NSTimeInterval)time {  
+        AVURLAsset *asset = [[[AVURLAsset alloc] initWithURL:videoURL options:nil] autorelease];  
+        NSParameterAssert(asset);  
+        AVAssetImageGenerator *assetImageGenerator = [[[AVAssetImageGenerator alloc] initWithAsset:asset] autorelease];  
+        assetImageGenerator.appliesPreferredTrackTransform = YES;  
+        assetImageGenerator.apertureMode = AVAssetImageGeneratorApertureModeEncodedPixels;  
+      
+        CGImageRef thumbnailImageRef = NULL;  
+        CFTimeInterval thumbnailImageTime = time;  
+        NSError *thumbnailImageGenerationError = nil;  
+        thumbnailImageRef = [assetImageGenerator copyCGImageAtTime:CMTimeMake(thumbnailImageTime, 60) actualTime:NULL error:&thumbnailImageGenerationError];  
+      
+        if (!thumbnailImageRef)  
+            NSLog(@"thumbnailImageGenerationError %@", thumbnailImageGenerationError);  
+      
+        UIImage *thumbnailImage = thumbnailImageRef ? [[[UIImage alloc] initWithCGImage:thumbnailImageRef] autorelease] : nil;  
+      
+        return thumbnailImage;  
+============================================================================

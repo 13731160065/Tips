@@ -1,0 +1,31 @@
+
+截图1
+-(UIImage *)clipImageFromImage:(UIImage *)orgImage  Rect:(CGRect)clipRect{  
+    CGImageRef imageRef = orgImage.CGImage;  
+    CGImageRef subImageRef = CGImageCreateWithImageInRect(imageRef, clipRect);  
+    CGSize size;  
+    size = clipRect.size;  
+    UIGraphicsBeginImageContext(size);  
+    CGContextRef context = UIGraphicsGetCurrentContext();  
+    CGContextDrawImage(context, clipRect, subImageRef);  
+    UIImage* clipImage = [UIImage imageWithCGImage:subImageRef];  
+    CGImageRelease(subImageRef);  
+    UIGraphicsEndImageContext();  
+    return clipImage;  
+}  
+
+截图2（faceplay工程用过）
+- (UIImage *)remixImageWithImageView:(UIView *)remixImageView {
+    //截取图片
+    UIGraphicsBeginImageContextWithOptions(remixImageView.frame.size, NO, 1.0f);
+    
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    
+    [remixImageView.layer renderInContext:ctx];
+    
+    UIImage *imgDraw = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return imgDraw;
+}
