@@ -1,0 +1,67 @@
+打开相机：
+================================================================================
+//先设定sourceType为相机，然后判断相机是否可用（ipod）没相机，不可用将sourceType设定为相片库
+    UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypeCamera;
+//    if (![UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]) {
+//        sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+//    }
+    //sourceType = UIImagePickerControllerSourceTypeCamera; //照相机
+    //sourceType = UIImagePickerControllerSourceTypePhotoLibrary; //图片库
+    //sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum; //保存的相片
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];//初始化
+    picker.delegate = self;
+    picker.allowsEditing = YES;//设置可编辑
+    picker.sourceType = sourceType;
+    [self presentModalViewController:picker animated:YES];//进入照相界面
+================================================================================
+
+打开相册：（区分pad和iphone）
+
+for iphone：
+================================================================================
+UIImagePickerController *pickerImage = [[UIImagePickerController alloc] init];
+    if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+        pickerImage.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        //pickerImage.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+        pickerImage.mediaTypes = [UIImagePickerController availableMediaTypesForSourceType:pickerImage.sourceType];
+        
+    }
+    pickerImage.delegate = self;
+    pickerImage.allowsEditing = NO;
+    [self presentModalViewController:pickerImage animated:YES];
+================================================================================
+
+for ipad: 
+================================================================================
+UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    //sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum; //保存的相片
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.delegate = self;
+    picker.allowsEditing = NO;//是否允许编辑
+    picker.sourceType = sourceType;
+    /*
+     如果从一个导航按钮处呈现，使用：
+     presentPopoverFromBarButtonItem:permittedArrowDirections:animated:；
+     如果要从一个视图出呈现，使用：
+     presentPopoverFromRect:inView:permittedArrowDirections:animated:
+     
+     如果设备旋转以后，位置定位错误需要在父视图控制器的下面方法里面重新定位：
+     didRotateFromInterfaceOrientation:（在这个方法体里面重新设置rect）
+     然后再次调用：
+     - (void)presentPopoverFromRect:(CGRect)rect inView:(UIView *)view permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections animated:(BOOL)animated             
+     */
+    //UIPopoverController只能在ipad设备上面使用；作用是用于显示临时内容，特点是总是显示在当前视图最前端，当单击界面的其他地方时自动消失。
+    UIPopoverController *popover = [[UIPopoverController alloc]initWithContentViewController:picker];
+    self.imagePicker = popover;
+    //permittedArrowDirections 设置箭头方向
+    [self.imagePicker presentPopoverFromRect:CGRectMake(0, 0, 300, 300) inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+================================================================================
+
+点击相册中的图片 货照相机照完后点击use  后触发的方法
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+
+
+点击cancel 调用的方法
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
