@@ -1,0 +1,839 @@
+一、
+想象一张最好的生活自拍照。它是很高大尚滴并且以后会有用武之地。转发，票选将会使你获得成千上万份的关注，因为它确实很酷很帅。现在，如果你有什么办法，可以让它看起来更加的高大尚。。。
+
+这就是图形图像处理要做到的！它可以让你的照片带上更多的特殊效果，比如修改颜色，与其它的图片进行合成等等。
+
+在这两部分教程中，你需要先弄明白一些图形图像处理的基础知识。接着，你可以利用如下四个流行的图形图像处理方法编写一个实现“幽灵图像过滤器”的程序：
+
+1：位图图像原图修改
+2：使用Core Graphics库
+3：使用Core Image库
+4：使用GPUImage库的第三部分
+
+在图形图像处理教程的第一节，主要讲解位图图像原图的修改。一但你明白基本的图形处理方法，那么其它的相关内容你也会较容易的弄明白。在教程的第二部分，主要介绍另外的三种修改图像方法。
+
+本教程假设你拥有关于IOS系统和Object-C的基础，但在开始本教程前不需要拥有任何关于图形图像处理的知识。
+
+开始
+
+在开始写代码之前，先理解一些关于图形图像处理的基本概念很是需要。所以，先别急，放轻松，让我们在最短的时间里去了解一下图形图像的内部工作原理。
+
+第一件事情，看一下我们本教程中的新朋友。。。掌声在哪里。。。幽灵！
+
+[图片]
+
+不要怕，幽灵不是真的鬼魂。实际上，它只是一张图像。简单来说，它就是由一堆1和0组成的。这样说听上去会更好一些。
+
+什么是图形图像
+
+一张图像就是像素点的集合，每一个像素都是一个单独，明了的颜色。图像一般情况下都存储成数组，你可以把他们相像成2维数组。
+
+这一张是缩放版本的幽灵，被放大后：
+
+[图片]
+
+图像中这些小的“方块”就是像素，每一像素只表示一种颜色。当成百上千万的像素集体到一起后，就构成了图形图像。
+
+如何用字节来表示颜色
+
+表示图形的方式有许多种。在本教程中使用的是最简单的：32位RGBA模式。
+
+如同它的名字一样，32位RGBA模式会将一个颜色值存储在32位，或者4个字节中。每一个字节存储一个部分或者一个颜色通道。这4个部分分别是：
+
+~ R代表红色
+
+~ G代表绿色
+
+~ B代表蓝色
+
+~ A代表透明度
+
+正如你所知道的，红，绿和蓝是所有颜色的基本颜色集。你几乎可以使用他们创建搭配出任何想要的颜色。
+
+由于使用8位表示每一种颜色值，那么使用32位RGBA模式实际上可以创建出不透明的颜色的总数是256256256种，已经接近17亿种。惊叹，那是好多好多好多的颜色！
+
+alpha通道与其它的不同。你可以把它当成透明的东西，就像UIView的alpah属性。
+
+透明颜色意味着没有任何的颜色，除非在它的后面有另外一种颜色；它的主要功能就是要告诉图像处理这个像素的透明度是多少，于是，就会有多少颜色值穿透过它而显示出来。
+
+你将会通过本节后面的内容更新深入的了解。
+
+总结一下，一个图形就是像素的集体，并且每一个像素只能表示一种颜色。本节，你已经了解了32位RGBA模式。
+
+提示：你有没有想过，位图的结构组成？一张位图就是一张2D的地图，每一块就是一个像素！像素就是地图的每一块。哈哈！
+
+现在你已经了解了用字节表示颜色的基础了。不过在你开始着手写代码前，还有三个以上的概念需要你了解。
+
+颜色空间
+
+使用RGB模式表示颜色是颜色空间的一个例子。它只是众多存储颜色方法中的一种。另外一种颜色空间是灰阶空间。像它的名字一样，所有的图形都只有黑和白，只需要保存一个值来表示这种颜色。
+
+下面这种使用RGB模式表示的颜色，人类的肉眼是很难识别的。
+
+[图片]
+
+Red: 0 Green:104 Blue:55
+
+你认为RGB值为[0,104,55]会产生一种什么颜色？
+
+认真的思考一下，你也许会说是一种蓝绿色或者绿色，但那是错的。原来，你所看到的是深绿色。
+
+另外两种比较常见的颜色空间是HSV和YUV。
+
+HSV，使用色调，饱和度和亮度来直观的存储颜色值。你可以把这三个部分这样来看：
+
+·色调就是颜色
+·饱和度就是这个颜色有多么的饱满
+·值就是颜色的亮度有多亮
+
+在这种颜色空间中，如果你发现自己并不知道HSV的值，那么通过它的三个值，可以很容易的相像出大概是什么颜色。
+
+RGB和HSV颜色空间的区别是很容易理解的，请看下面的图像：
+
+[图片]RGB和HSV色彩空间的立体图
+
+YUV是另外一种常见的颜色空间，电视机使用的就是这种方式。
+
+最开始的时候，电视机只有灰阶空间一种颜色通道。后来，当彩色电影出现后，就有了2种通道。当然，如果你想在本教程中使用YUV，那么你需要去研究更多关于YUV和其它颜色空间的相关知识。
+
+NOTE:同样的颜色空间，你也可以使用不同的方法表示颜色。比如16位RGB模式，可以使用5个字节存储R，6个字节存储G，5个字节存储B。
+
+为什么用6个字节存储绿色，5个字节存储蓝色？这是一个有意思的问题，答案就是因为眼球。人类的眼球对绿色比较敏感，所以人类的眼球更空间分辨出绿色的颜色值变化。
+
+坐标系统
+
+既然一个图形是由像素构成的平面地图，那么图像的原点需要说明一下。通常原点在图像的左上角，Y轴向下；或者原点在图像的左下，Y轴向上。
+
+没有固定的坐标系统，苹果在不同的地方可能会使用不同的坐标系。
+
+目前，UIImage和UIView使用的是左上原点坐标，Core Image和Core Graphics使用的是左下原点坐标。这个概念很重要，当你遇到图像绘制倒立问题的时候你就知道了。
+
+图形压缩
+
+这是在你开始编写代码前的最后一个需要了解的概念了！原图的每一个像素都被存储在各自的内存中。
+
+如果你使用一张8像素的图形做运算，它将会消耗810^6像素4比特/像素=32兆字节内存。关注一下数据！
+
+这就是为什么会出现jpeg,png和其它图形格式的原因。这些都是图形压缩格式。
+
+当GPU在绘制图像的时候，会使用大量内存把图像的原始尺寸进行解压缩。如果你的程序占用了过多的内存，那么操作系统会将进程杀死（程序崩溃）。所以请确定你的程序使用较大的图像进行过测试。
+
+[图片]
+
+我需要一些行动...
+
+关注一下像素
+
+现在，你已经基础了解了图形图像的内部工作原理，已经可以开始编写代码喽。今天你将会开发一款改变自己照片的程序，叫做SpookCam,该程序会把一张幽灵的图像放到你的照片中！
+
+下载工具包在xcode中打开该项目，编译并运行。在你的手机上会看到如下的图像：
+
+[图片]
+
+在控制台，你会看到如下的输出：
+
+[图片]
+
+当前的程序可以加载这张幽灵的图像，并得到图像的所有像素值，打印出每个像素的亮度值到日志中。
+
+亮度值是神马？它就是红色，绿色和蓝色通过的平均值。
+
+注意输出日志外围的亮度值都为0，这意味着他们代码的是黑色。然而，他们的透明度的值是0，所以它们是透明不可见的。为了证明这一点，试着将imageView的背景颜色设置成红色，然后再次编译并运行。
+
+[图片]
+
+现在快速的浏览一下代码。ViewController.m中使用UIImagePickerController来在相册中取得图像或者使用机机获得图像。
+
+当它选定一张图像后，调用-setupWithImage:在这行中，输出了每一像素的亮度值到日志中。定位到ViewController.m中的logPixelsOfImage，查看方法中的开始部分：
+
+// 1.
+CGImageRef inputCGImage = [image CGImage];
+NSUInteger width =                 CGImageGetWidth(inputCGImage);
+NSUInteger height = CGImageGetHeight(inputCGImage);
+
+// 2.
+NSUInteger bytesPerPixel = 4;
+NSUInteger bytesPerRow = bytesPerPixel *     width;
+NSUInteger bitsPerComponent = 8;
+
+UInt32 * pixels;
+pixels = (UInt32 *) calloc(height * width,     sizeof(UInt32));
+
+// 3.
+CGColorSpaceRef colorSpace =     CGColorSpaceCreateDeviceRGB();
+CGContextRef context =     CGBitmapContextCreate(pixels, width, height,     bitsPerComponent, bytesPerRow, colorSpace,     kCGImageAlphaPremultipliedLast |     kCGBitmapByteOrder32Big);
+
+// 4.
+CGContextDrawImage(context, CGRectMake(0,     0, width, height), inputCGImage);
+
+// 5. Cleanup
+CGColorSpaceRelease(colorSpace);
+CGContextRelease(context);
+
+现在，让我们分段的来看一下：
+
+1：第一部分：把UIImage对象转换为需要被核心图形库调用的CGImage对象。同时，得到图形的宽度和高度。
+
+2：第二部分：由于你使用的是32位RGB颜色空间模式，你需要定义一些参数bytesPerPixel（每像素大小）和bitsPerComponent（每个颜色通道大小），然后计算图像bytesPerRow（每行有大）。最后，使用一个数组来存储像素的值。
+
+3：第三部分：创建一个RGB模式的颜色空间CGColorSpace和一个容器CGBitmapContext,将像素指针参数传递到容器中缓存进行存储。在后面的章节中将会进一步研究核图形库。
+
+4：第四部分：把缓存中的图形绘制到显示器上。像素的填充格式是由你在创建context的时候进行指定的。
+
+5：第五部分：清除colorSpace和context.
+
+NOTE:当你绘制图像的时候，设备的GPU会进行解码并将它显示在屏幕。为了访问本地数据，你需要一份像素的复制，就像刚才做的那样。
+
+此时此刻，pixels存储着图像的所有像素信息。下面的几行代码会对pixels进行遍历，并打印：
+
+// 1.
+#define Mask8(x) ( (x) & 0xFF )
+#define R(x) ( Mask8(x) )
+#define G(x) ( Mask8(x >> 8 ) )
+#define B(x) ( Mask8(x >> 16) )
+
+NSLog(@"Brightness of image:");
+// 2.
+UInt32 * currentPixel = pixels;
+for (NSUInteger j = 0; j < height; j++) {
+  for (NSUInteger i = 0; i < width; i++) {
+    // 3.
+    UInt32 color = *currentPixel;
+    printf("%3.0f ",     (R(color)+G(color)+B(color))/3.0);
+    // 4.
+    currentPixel++;
+  }
+  printf("\n");
+}
+
+代码解释：
+
+1：定义了一些简单处理32位像素的宏。为了得到红色通道的值，你需要得到前8位。为了得到其它的颜色通道值，你需要进行位移并取截取。
+
+2：定义一个指向第一个像素的指针，并使用2个for循环来遍历像素。其实也可以使用一个for循环从0遍历到width*height，但是这样写更容易理解图形是二维的。
+
+3：得到当前像素的值赋值给currentPixel并把它的亮度值打印出来。
+
+4：增加currentPixel的值，使它指向下一个像素。如果你对指针的运算比较生疏，记住这个：currentPixel是一个指向UInt32的变量，当你把它加1后，它就会向前移动4字节（32位），然后指向了下一个像素的值。
+
+提示：还有一种非正统的方法就是把currentPiexl声明为一个指向8字节的类型的指针，比如char。这种方法，你每增加1，你将会移动图形的下一个颜色通道。与它进行位移运算，你会得到颜色通道的8位数值。
+
+此时此刻，这个程序只是打印出了原图的像素信息，但并没有进行任何修改！下面将会教你如何进行修改。
+
+SpookCame-原图修改
+
+四种研究方法都会在本小节进行，你将会花费更多的时间在本节，因为它包括了图形图像处理的第一原则。掌握了这个方法你会明白其它库所做的。
+
+在本方法中，你会遍历每一个像素，就像之前做的那个，但这次，将会对每个像素进行新的赋值。
+
+这种方法的优点是容易实现和理解；缺点就是扫描大的图形和效果的时候会更复杂，不精简。
+
+正如你在程序开始看到的，ImageProcessor类已经存在。将它应用到ViewController中，替换-setupWithImage，代码如下：
+
+- (void)setupWithImage:(UIImage*)image {
+  UIImage * fixedImage = [image     imageWithFixedOrientation];
+  self.workingImage = fixedImage;
+
+  // Commence with processing!
+  [ImageProcessor     sharedProcessor].delegate = self;
+  [[ImageProcessor sharedProcessor]     processImage:fixedImage];
+}
+
+注释掉-viewDidLoad中下面的代码：
+
+// [self setupWithImage:[UIImage     imageNamed:@"ghost_tiny.png"]];
+
+现在，打开ImageProcessor.m。如你所见，ImageProcessor是单例模式，调用-processUsingPixels来加载图像，然后通过ImageProcessorDelegate返回输出。
+
+-processsUsingPixels：是之前你所看到获得图形像素代码的一种复制品，如同inputImage。注意两个额外的宏A(x)和RGBAMake(r,g,b,a)的定义，用来方便处理。
+
+编译，并运行。从相册（拍照）选择一张图片，它将会出现在屏幕上：
+
+[图片]
+
+照片中的人看上去在放松，是时候把幽灵放进去了！
+
+在processUsingPixels的返回语句前，添加如下代码，创建一个幽灵的CGImageRef对象。
+UIImage * ghostImage = [UIImage imageNamed:@"ghost"];
+CGImageRef ghostCGImage = [ghostImage CGImage];
+
+现在，做一些数学运算来确定幽灵图像放在原图的什么位置。
+
+CGFloat ghostImageAspectRatio =     ghostImage.size.width /     ghostImage.size.height;
+NSInteger targetGhostWidth = inputWidth *     0.25;
+CGSize ghostSize =     CGSizeMake(targetGhostWidth, targetGhostWidth     / ghostImageAspectRatio);
+CGPoint ghostOrigin =     CGPointMake(inputWidth * 0.5, inputHeight *     0.2);
+
+以上代码会把幽灵的图像宽度缩小25%，并把它的原点设定在点ghostOrigin。
+
+下一步是创建一张幽灵图像的缓存图，
+
+NSUInteger ghostBytesPerRow = bytesPerPixel * ghostSize.width;
+UInt32 * ghostPixels = (UInt32     *)calloc(ghostSize.width * ghostSize.height,     sizeof(UInt32));
+
+CGContextRef ghostContext =     CGBitmapContextCreate(ghostPixels,     ghostSize.width, ghostSize.height,
+                                       bit    sPerComponent, ghostBytesPerRow, colorSpace,
+                                       kCG    ImageAlphaPremultipliedLast |     kCGBitmapByteOrder32Big);
+CGContextDrawImage(ghostContext,     CGRectMake(0, 0, ghostSize.width,     ghostSize.height),ghostCGImage);
+
+上面的代码和你从inputImage中获得像素信息一样。不同的地方是，图像会被缩小尺寸，变得更小了。
+
+现在已经到了把幽灵图像合并到你的照片中的最佳时间了。
+
+合并：像前面提到的，每一个颜色都有一个透明通道来标识透明度。并且，你每创建一张图像，每一个像素都会有一个颜色值。
+
+所以，如果遇到有透明度和半透明的颜色值该如何处理呢？
+
+答案是，对透明度进行混合。在最顶层的颜色会使用一个公式与它后面的颜色进行混合。公式如下：
+
+NewColor = TopColor * TopColor.Alpha + BottomColor * (1 - TopColor.Alpha)
+
+这是一个标准的线性差值方程。
+
+·当顶层透明度为1时，新的颜色值等于顶层颜色值。
+·当顶层透明度为0时，新的颜色值于底层颜色值。
+·最后，当顶层的透明度值是0到1之前的时候，新的颜色值会混合借于顶层和底层颜色值之间。
+
+还可以用 premultiplied alpha的方法。
+
+当处理成千上万像素的时候，他的性能会得以发挥。
+
+好，回到幽灵图。
+
+如同其它位图运算一样，你需要一些循环来遍历每一个像素。但是，你只需要遍历那些你需要修改的像素。
+
+把下面的代码添加到processUsingPixels的下面，还是放在返回语句的前面：
+NSUInteger offsetPixelCountForInput = ghostOrigin.y * inputWidth + ghostOrigin.x;
+for (NSUInteger j = 0; j < ghostSize.height; j++) {
+for (NSUInteger i = 0; i < ghostSize.width; i++) {
+UInt32 * inputPixel = inputPixels + j * inputWidth + i + offsetPixelCountForInput;
+UInt32 inputColor = *inputPixel;
+
+    UInt32 * ghostPixel = ghostPixels + j     * (int)ghostSize.width + i;
+    UInt32 ghostColor = *ghostPixel;
+
+    // Do some processing here      
+  }
+}
+
+通过对幽灵图像像素数的循环和offsetPixelCountForInput获得输入的图像。记住，虽然你使用的是2维数据存储图像，但在内存他它实际上是一维的。
+
+下一步，添加下面的代码到注释语句 Do some processing here的下面来进行混合：
+
+// Blend the ghost with 50% alpha
+CGFloat ghostAlpha = 0.5f * (A(ghostColor)     / 255.0);
+UInt32 newR = R(inputColor) * (1 -     ghostAlpha) + R(ghostColor) * ghostAlpha;
+UInt32 newG = G(inputColor) * (1 -     ghostAlpha) + G(ghostColor) * ghostAlpha;
+UInt32 newB = B(inputColor) * (1 -     ghostAlpha) + B(ghostColor) * ghostAlpha;
+
+// Clamp, not really useful here :p
+newR = MAX(0,MIN(255, newR));
+newG = MAX(0,MIN(255, newG));
+newB = MAX(0,MIN(255, newB));
+
+*inputPixel = RGBAMake(newR, newG, newB,     A(inputColor));
+
+这部分有2点需要说明：
+
+1：你将幽灵图像的每一个像素的透明通道都乘以了0.5，使它成为半透明状态。然后将它混合到图像中像之前讨论的那样。
+
+2：clamping部分将每个颜色的值范围进行限定到0到255之间，虽然一般情况下值不会越界。但是，大多数情况下需要进行这种限定防止发生意外的错误输出。
+
+最后一步，添加下面的代码到processUsingPixels的下面，替换之前的返回语句：
+
+// Create a new UIImage
+CGImageRef newCGImage =     CGBitmapContextCreateImage(context);
+UIImage * processedImage = [UIImage     imageWithCGImage:newCGImage];
+
+return processedImage;
+
+上面的代码创建了一张新的UIImage并返回它。暂时忽视掉内存泄露问题。编译并运行，你将会看到漂浮的幽灵图像：
+
+[图片]
+
+好了，完成了，这个程序简直就像个病毒！
+
+黑白颜色
+
+最后一种效果。尝试自己实现黑白颜色效果。为了做到这点，你需要把每一个像素的红色，绿色，蓝色通道的值设定成三个通道原始颜色值的平均值，就像开始的时候输出幽灵图像所有像素亮度值那样。
+
+在注释语句// create a new UIImage前添加上一步的代码 。
+
+找到了吗？
+// Convert the image to black and white
+for (NSUInteger j = 0; j < inputHeight; j++) {
+for (NSUInteger i = 0; i < inputWidth; i++) {
+UInt32 * currentPixel = inputPixels + (j * inputWidth) + i;
+UInt32 color = *currentPixel;
+
+    // Average of RGB = greyscale
+    UInt32 averageColor = (R(color) +     G(color) + B(color)) / 3.0;
+
+    *currentPixel = RGBAMake(averageColor,     averageColor, averageColor, A(color));
+  }
+}
+
+最后的一步就是清除内存。ARC不能代替你对CGImageRefs和CGContexts进行管理。添加如下代码到返回语句之前。
+
+ CGColorSpaceRelease(colorSpace);
+CGContextRelease(context);
+CGContextRelease(ghostContext);
+free(inputPixels);
+free(ghostPixels);
+
+编译并运行，不要被结果吓到：
+
+[图片]
+
+下面需要做的：
+
+恭喜！你已经完成了自己的第一个图像处理程序。你可以在这里下载该工程的源代码。
+
+还不错吧？你可以尝试修改一下循环中的代码创建自己想要的效果，尝试下实现下面的效果：
+
+·尝试调换图像的红色和蓝色通道值
+·提高图像的亮度10%
+·作为进一步的挑战，尝试只使用基于像素的方法缩放幽灵的图像，下面是步骤：
+1：使用幽灵图像的尺寸大小创建一个新的CGContext。
+
+2：在原图像中得到你想要的并赋值到新的缓存图像中。
+
+3：附加，尝试在像素之前进行计算并插入相似值像素点。如果你可以在四个像素间进行插入，你自己就已经实现Bilinear scaling（双线性插值法）了！太牛了！
+
+如果你已经完成了第一个项目，想必你对图形图像的处理已经有了基本的概念。现在你可以尝试使用更快更好的方法来实现相同的效果。
+
+在下一章节中，你将会使用另外三个新的方法替换-processUsingPixels：完成相同的任务。一定要看丫！
+
+
+二、
+Learn about image processing in iOS and create cool special effects!
+
+学习在iOS中处理图像和创建酷炫的效果！
+
+欢迎来到本系列教程的第二节，iOS中的图像！
+
+在本系列的第一节，我们学会了如何访问和修改图像的原始像素值。
+
+在本系列的第二节或者说最终节中，你将学习如何使用其他的库来执行同样的任务：Core Graphics, Core Image 和GPUImage。你将学习它们各自的优点和缺点，这样你就可以针对你的情况做出更好的选择。
+
+本教程从上一节结束的地方开始。如果你没有项目文件，你可以在这里下载它。
+
+如果你在第一节中表现得很好，你要好好享受这一节！既然你理解了工作原理，你将充分理解这些库进行图像处理是多么的简单。
+超级SpookCam之Core Graphics版本
+
+Core Graphics是Apple基于Quartz 2D绘图引擎的绘图API。它提供了底层API，如果你熟悉OpenGL可能会觉得它们很相似。
+
+如果你曾经重写过视图的-drawRect：函数，你其实已经与Core Graphics交互过了，它提供了很多绘制对象、斜度和其他很酷的东西到你的视图中的函数。
+
+这个网站已经有大量的Core Graphics教程，比如这个和这个。所以，这本教程中，我们将关注于如何使用Core Graphics来做一些基本的图像处理。
+
+在开始之前，我们需要熟悉一个概念Graphics Context。
+
+    概念：Graphics Contexts是OpenGl和Core Graphics的核心概念，它是渲染中最常见的类型。它是一个持有所有关于绘制信息的全局状态对象。
+
+    在Core Graphics中，包括了当前的填充颜色，描边颜色，变形，蒙版，在哪里绘制等。在iOS中，还有其他不同类型的context比如PDF context，它可以让你绘制一个PDF文件。
+
+    在本教程中，你只会使用到Bitmap context，它可以绘制位图。
+
+    在-drawRect:函数中，你会发现你可以直接调用UIGraphicsGetCurrentContext()来使用context。系统被设置为你可以直接在视图上绘制被渲染的图像。
+
+    在-drawRect:函数外，通常没有图形context可用。你可以像第一个项目中一样用CGContextCreate()创建，或者你可以使用UIGraphicsBeginImageContext()和UIGraphicsGetCurrentContext()抓取创建的context。
+
+    这叫做离屏-渲染，意思是你不是在任何地方直接绘制，而是在离屏缓冲区渲染。
+
+    在Core Graphics中，你可以获得context中的UIImage然后把它显示在屏幕上。使用OpenGL，你可以直接把这个缓冲区与当前渲染在屏幕中的交换，然后直接显示它。
+
+    使用Core Graphics处理图像利用了在缓冲区渲染图像的离屏渲染，它从context抓取图像，并适用任何你想要的效果。
+
+好了，概念介绍完了，是时候变一些代码的魔术了！添加下面的新函数到ImageProcessor.m中：
+
+- (UIImage *)processUsingCoreGraphics:(UIImage*)input {
+  CGRect imageRect = {CGPointZero,input.size};
+  NSInteger inputWidth = CGRectGetWidth(imageRect);
+  NSInteger inputHeight = CGRectGetHeight(imageRect);
+
+  // 1) Calculate the location of Ghosty
+  UIImage * ghostImage = [UIImage imageNamed:@"ghost.png"];
+  CGFloat ghostImageAspectRatio = ghostImage.size.width / ghostImage.size.height;
+
+  NSInteger targetGhostWidth = inputWidth * 0.25;
+  CGSize ghostSize = CGSizeMake(targetGhostWidth, targetGhostWidth / ghostImageAspectRatio);
+  CGPoint ghostOrigin = CGPointMake(inputWidth * 0.5, inputHeight * 0.2);
+
+  CGRect ghostRect = {ghostOrigin, ghostSize};
+
+  // 2) Draw your image into the context.
+  UIGraphicsBeginImageContext(input.size);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+
+  CGAffineTransform flip = CGAffineTransformMakeScale(1.0, -1.0);
+  CGAffineTransform flipThenShift = CGAffineTransformTranslate(flip,0,-inputHeight);
+  CGContextConcatCTM(context, flipThenShift);
+
+  CGContextDrawImage(context, imageRect, [input CGImage]);
+
+  CGContextSetBlendMode(context, kCGBlendModeSourceAtop);
+  CGContextSetAlpha(context,0.5);
+  CGRect transformedGhostRect = CGRectApplyAffineTransform(ghostRect, flipThenShift);
+  CGContextDrawImage(context, transformedGhostRect, [ghostImage CGImage]);
+
+  // 3) Retrieve your processed image
+  UIImage * imageWithGhost = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+
+  // 4) Draw your image into a grayscale context   
+  CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
+  context = CGBitmapContextCreate(nil, inputWidth, inputHeight,
+                           8, 0, colorSpace, (CGBitmapInfo)kCGImageAlphaNone);
+
+  CGContextDrawImage(context, imageRect, [imageWithGhost CGImage]);
+
+  CGImageRef imageRef = CGBitmapContextCreateImage(context);
+  UIImage * finalImage = [UIImage imageWithCGImage:imageRef];
+
+  // 5) Cleanup
+  CGColorSpaceRelease(colorSpace);
+  CGContextRelease(context);
+  CFRelease(imageRef);
+
+  return finalImage;
+}
+
+这个函数内容可真够多的，让我们一点一点分析它。
+1) 计算Ghosty的位置
+
+UIImage * ghostImage = [UIImage imageNamed:@"ghost.png"];
+CGFloat ghostImageAspectRatio = ghostImage.size.width / ghostImage.size.height;
+
+NSInteger targetGhostWidth = inputWidth * 0.25;
+CGSize ghostSize = CGSizeMake(targetGhostWidth, targetGhostWidth / ghostImageAspectRatio);
+CGPoint ghostOrigin = CGPointMake(inputWidth * 0.5, inputHeight * 0.2);
+
+CGRect ghostRect = {ghostOrigin, ghostSize};
+
+创建一个新的CGContext。
+
+像前面讨论的，这里创建了一个“离屏”（“off-screen”）的context。还记得吗？CGContext的坐标系以左下角为原点，相反的UIImage使用左上角为原点。
+
+有趣的是，如果你使用UIGraphicsBeginImageContext()来创建一个context，系统会把坐标翻转，把原点设为左上角。因此，你需要变换你的context把它翻转回来，从而使CGImage能够进行正确的绘制。
+
+如果你直接在这个context中绘制UIImage，你不需要执行变换，坐标系统将会自动匹配。设置这个context的变换将影响所有你后面绘制的图像。
+2) 把你的图像绘制到context中。
+
+UIGraphicsBeginImageContext(input.size);
+CGContextRef context = UIGraphicsGetCurrentContext();
+
+CGAffineTransform flip = CGAffineTransformMakeScale(1.0, -1.0);
+CGAffineTransform flipThenShift = CGAffineTransformTranslate(flip,0,-inputHeight);
+CGContextConcatCTM(context, flipThenShift);
+
+CGContextDrawImage(context, imageRect, [input CGImage]);
+
+CGContextSetBlendMode(context, kCGBlendModeSourceAtop);
+CGContextSetAlpha(context,0.5);
+CGRect transformedGhostRect = CGRectApplyAffineTransform(ghostRect, flipThenShift);
+CGContextDrawImage(context, transformedGhostRect, [ghostImage CGImage]);
+
+在绘制完图像后，你context的alpha值设为了0.5。这只会影响后面绘制的图像，所以本次绘制的输入图像使用了全alpha。
+
+你也需要把混合模式设置为kCGBlendModeSourceAtop。
+
+这里为context设置混合模式是为了让它使用之前的相同的alpha混合公式。在设置完这些参数之后，翻转幽灵的坐标然后把它绘制在图像中。
+3) 取回你处理的图像
+
+UIImage * imageWithGhost = UIGraphicsGetImageFromCurrentImageContext();
+UIGraphicsEndImageContext();
+
+为了把你的图像转换成黑白的，你将创建一个使用灰度（grayscale）色彩的新的CGContext。它将把所有你在context中绘制的图像转换成灰度的。
+
+因为你使用CGBitmapContextCreate()来创建了这个context，坐标则是以左下角为原点，你不需要翻转它来绘制CGImage。
+4) 绘制你的图像到一个灰度（grayscale）context中
+
+CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
+context = CGBitmapContextCreate(nil, inputWidth, inputHeight,
+                         8, 0, colorSpace, (CGBitmapInfo)kCGImageAlphaNone);
+
+CGContextDrawImage(context, imageRect, [imageWithGhost CGImage]);
+
+CGImageRef imageRef = CGBitmapContextCreateImage(context);
+UIImage * finalImage = [UIImage imageWithCGImage:imageRef];
+
+取回你最终的图像。
+
+为什么你不可以使用UIGraphicsGetImageFromCurrentImageContext()呢，因为你没有把当前的图形context设置为灰度context。
+
+因此，你需要自己创建它。你需要使用CGBitmapContextCreateImage()来渲染context中的图像。
+5) 清理。
+
+CGColorSpaceRelease(colorSpace);
+CGContextRelease(context);
+CFRelease(imageRef);
+
+return finalImage;
+
+在最后，你需要释放所有你创建的对象。然后 – 完成了！
+
+    内存使用：当执行图像处理时，密切关注内存使用情况。像在第一节中讨论的一样，一个8M像素的图像占用了高达32M的内存。尽量避免在内存中同一时间保持同一图像的多个复制。
+
+    注意到为什么我们第二次需要释放context而第一次不需要了吗？这是因为第一次时，你使用UIGraphicsGetCurrentImageContext()获取了context。这里的关键词是‘get’。
+
+    ‘Get’意味着你获取了当前context的引用，你并不持有它。
+
+    在第二次中，你调用了CGBitmapContextCreateImage()，Create意味着你持有这个对象，并需要管理它的生命周期。这也是你为什么需要释放imageRef的原因，因为你是通过CGBitmapContextCreateImage()创建它的。
+
+干得漂亮！现在，替换processImage中的第一行：调用这个新的函数替换掉processUsingPixels:：
+
+UIImage * outputImage = [self processUsingCoreGraphics:inputImage];
+
+生成和运行一下。你应该能看到和之前一样的输出。
+
+BuildnRun-3
+
+好灵异！你可以在这里下载到本节中完整项目的代码。
+
+在这个简单的例子中，使用Core Graphics看起来好像不比直接操作像素更简单。
+
+然而，想象一个更复杂的操作，比如旋转图像。在像素操作中，这需要相当复杂的数学。
+
+但是，使用Core Graphics，你只需要在绘制图像前给context设置一个旋转的变换就可以了。因为，你处理的内容越复杂，你使用Core Graphics则能节省更多的时间。
+
+介绍完了两种方法，下面还有两种方法。下一个：Core Image！
+超超SpookCam之Core Image版本
+
+这个网站也已经有大量好的Core Image教程，比如IOS 6中的这个。我们也在我们的iOS教程系列中有很多关于Core Image的章节。
+
+在本教程中，你将看到有很多关于Core Image与其他几种方法对比的讨论。
+
+Core Image是Apple的图像处理的解决方案。它避免了所有底层的像素操作方法，转而使用高级别的滤镜替代了它们。
+
+Core Image最好的部分在于它对比操作原始像素或Core Graphics有着极好的性能。这个库使用CPU和GPU混合处理提供接近实时的性能。
+
+Apple还提供了巨大的预先制作的滤镜库。在OSX中，你甚至可以使用Core Image Kernel Language创建你自己的滤镜，它跟OpenGL中的着色语言GLSL很相似。在写本教程时，你还不能在iOS中制作你自己的Core Image滤镜（只支持Mac OS X）。
+
+它还有一些比Core Graphics更好的效果。正如你在代码中看到的，你用Core Graphics来充分利用Core Image。
+
+添加这个新函数到ImageProcessor.m中：
+
+- (UIImage *)processUsingCoreImage:(UIImage*)input {
+  CIImage * inputCIImage = [[CIImage alloc] initWithImage:input];
+
+  // 1. Create a grayscale filter
+  CIFilter * grayFilter = [CIFilter filterWithName:@"CIColorControls"];
+  [grayFilter setValue:@(0) forKeyPath:@"inputSaturation"];
+
+  // 2. Create your ghost filter
+
+  // Use Core Graphics for this
+  UIImage * ghostImage = [self createPaddedGhostImageWithSize:input.size];
+  CIImage * ghostCIImage = [[CIImage alloc] initWithImage:ghostImage];
+
+  // 3. Apply alpha to Ghosty
+  CIFilter * alphaFilter = [CIFilter filterWithName:@"CIColorMatrix"];
+  CIVector * alphaVector = [CIVector vectorWithX:0 Y:0 Z:0.5 W:0];
+  [alphaFilter setValue:alphaVector forKeyPath:@"inputAVector"];
+
+  // 4. Alpha blend filter
+  CIFilter * blendFilter = [CIFilter filterWithName:@"CISourceAtopCompositing"];
+
+  // 5. Apply your filters
+  [alphaFilter setValue:ghostCIImage forKeyPath:@"inputImage"];
+  ghostCIImage = [alphaFilter outputImage];
+
+  [blendFilter setValue:ghostCIImage forKeyPath:@"inputImage"];
+  [blendFilter setValue:inputCIImage forKeyPath:@"inputBackgroundImage"];
+  CIImage * blendOutput = [blendFilter outputImage];
+
+  [grayFilter setValue:blendOutput forKeyPath:@"inputImage"];
+  CIImage * outputCIImage = [grayFilter outputImage];
+
+  // 6. Render your output image
+  CIContext * context = [CIContext contextWithOptions:nil];
+  CGImageRef outputCGImage = [context createCGImage:outputCIImage fromRect:[outputCIImage extent]];
+  UIImage * outputImage = [UIImage imageWithCGImage:outputCGImage];
+  CGImageRelease(outputCGImage);
+
+  return outputImage;
+}
+
+我们看一下这个代码跟之前的函数有多大区别。
+
+使用Core Image，你设置了大量的滤镜来处理你的图像 – 你使用了CIColorControls滤镜来设置灰度，CIColorMatrix和CISourceAtopCompositing来设置混合，最后把它们连接在一起。
+
+现在，让我们浏览一遍这个函数来学习它的每一个步骤。
+
+    创建CIColorControls滤镜，设置它的inputSaturation值为0。你可能记得，饱和度是HSV颜色空间的一个通道。这里的0表示了灰度。
+    创建一个和输入图像一样大小的填充的幽灵图像。
+    创建CIColorMatrix滤镜，设置它的alphaVector值为[0 0 0.5 0]。这将给幽灵的alpha值增加0.5。
+    创建CISourceAtopCompositing滤镜来进行alpha混合。
+    合并你的滤镜来处理图像。
+    渲染输出CIImage到CGImage，创建最终的UIImage。记得在后面释放你的内存。
+
+这个方法使用了一个叫做-createPaddedGhostImageWithSize:的帮助函数，它使用Core Graphics创建了输入图像25%大小缩小版的填充的幽灵。你自己能实现这个函数吗？
+自己试一下。如果你被卡住了，请看下面的解决方案：
+解决方案
+
+- (UIImage *)createPaddedGhostImageWithSize:(CGSize)inputSize {
+  UIImage * ghostImage = [UIImage imageNamed:@"ghost.png"];
+  CGFloat ghostImageAspectRatio = ghostImage.size.width / ghostImage.size.height;
+
+  NSInteger targetGhostWidth = inputSize.width * 0.25;
+  CGSize ghostSize = CGSizeMake(targetGhostWidth, targetGhostWidth / ghostImageAspectRatio);
+  CGPoint ghostOrigin = CGPointMake(inputSize.width * 0.5, inputSize.height * 0.2);
+
+  CGRect ghostRect = {ghostOrigin, ghostSize};
+
+  UIGraphicsBeginImageContext(inputSize);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+
+  CGRect inputRect = {CGPointZero, inputSize};
+  CGContextClearRect(context, inputRect);
+
+  CGAffineTransform flip = CGAffineTransformMakeScale(1.0, -1.0);
+  CGAffineTransform flipThenShift = CGAffineTransformTranslate(flip,0,-inputSize.height);
+  CGContextConcatCTM(context, flipThenShift);
+  CGRect transformedGhostRect = CGRectApplyAffineTransform(ghostRect, flipThenShift);
+  CGContextDrawImage(context, transformedGhostRect, [ghostImage CGImage]);
+
+  UIImage * paddedGhost = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+
+  return paddedGhost;
+}
+
+最后，替换掉processImage中的第一行: 来调用你的新的函数:
+
+UIImage * outputImage = [self processUsingCoreImage:inputImage];
+
+现在生成并运行。这次，你应该看到相同的幽灵图像。
+
+BuildnRun-3
+
+你可以在这里下载到本节项目的所有代码。
+
+Core Image提供了大量的滤镜，你可以使用它们来创建几乎任何你想要的效果。它是你处理图像时的好伙伴。
+
+现在到了最后一个解决方案，也是本教程中附带的唯一的第三方选项：GPUImage。
+大型超超SpookCam之GPUImage版本
+
+GPUImage是一个活跃的iOS上基于GPU的图像处理库。它在这个网站中的十佳iOS库中赢得了一席之地！
+
+GPUImage隐藏了在iOS中所有需要使用OpenGL ES的复杂的代码，并用极其简单的接口以很快的速度处理图像。GPUImage的性能甚至在很多时候击败了Core Image，但是Core Image仍然在很多函数中有优势。
+
+在开始学习GPUImage之前，你需要把它包含到你的项目中。这可以使用Cocoapods在项目中生成静态库或直接嵌入源码来完成。
+
+项目应用已经包含一个建立在外部的静态框架。你可以根据下面的步骤简单的把它复制到项目中：
+
+    说明:
+
+    在命令行中运行build.sh。生成的库和头文件将会被放在build/Release-iphone。
+
+    你也可以通过修改build.sh中的IOSSDK_VER变量来修改iOS SDK的版本（你可以通过使用xcodebuild -showsdks来查看所有可用的版本）。
+
+你可以通过下面来自Github仓库的说明把源代码嵌入你的项目：
+
+    说明:
+
+        拖拽GPUImage.xcodeproj文件到你Xcode项目中来把框架嵌入到你的项目中。
+
+        然后，到应用程序的target添加GPUImage为一个target依赖。
+
+        从GPUImage框架新产品文件夹中拖拽libGPUImage.a库到你应用程序target中的Link Binary With Librariesbuild phase。
+
+    GPUImage需要链接一些其他框架到你的应用程序，所以你需要添加如下的相关库到你的应用程序target：
+
+    CoreMedia
+
+    CoreVideo
+
+    OpenGLES
+
+    AVFoundation
+
+    QuartzCore
+
+    然后你需要找到框架的头文件。在你项目的build设置中，设置Header Search Paths的相对路径为你应用程序中框架/子文件夹中的GPUImage源文件目录。使Header Search Paths是递归的。
+
+添加GPUImage到你的项目中后，一定要在ImageProcessor.m中包含头文件。
+
+如果你想包含静态的框架，使用#import GPUImage/GPUImage.h。如果你想直接在项目中包含它，使用#import "GPUImage.h"。
+
+添加新的处理函数到ImageProcessor.m中:
+
+- (UIImage *)processUsingGPUImage:(UIImage*)input {
+
+  // 1. Create the GPUImagePictures
+  GPUImagePicture * inputGPUImage = [[GPUImagePicture alloc] initWithImage:input];
+
+  UIImage * ghostImage = [self createPaddedGhostImageWithSize:input.size];
+  GPUImagePicture * ghostGPUImage = [[GPUImagePicture alloc] initWithImage:ghostImage];
+
+  // 2. Set up the filter chain
+  GPUImageAlphaBlendFilter * alphaBlendFilter = [[GPUImageAlphaBlendFilter alloc] init];
+  alphaBlendFilter.mix = 0.5;
+
+  [inputGPUImage addTarget:alphaBlendFilter atTextureLocation:0];
+  [ghostGPUImage addTarget:alphaBlendFilter atTextureLocation:1];
+
+  GPUImageGrayscaleFilter * grayscaleFilter = [[GPUImageGrayscaleFilter alloc] init];
+
+  [alphaBlendFilter addTarget:grayscaleFilter];
+
+  // 3. Process & grab output image
+  [grayscaleFilter useNextFrameForImageCapture];
+  [inputGPUImage processImage];
+  [ghostGPUImage processImage];
+
+  UIImage * output = [grayscaleFilter imageFromCurrentFramebuffer];
+
+  return output;
+}
+
+嘿！它看来很明确。这是它的具体内容：
+
+    创建GPUImagePicture对象；再次使用-createPaddedGhostImageWithSize:为一个工具。这时GPUImage会把图像纹理上传到GPU内存。
+
+    创建和链接你将要使用的滤镜。这种链接与Core Image中的滤镜链接不同，它类似于管道。在你完成后，它看起来是这样的：
+
+    GPUFilterChain
+
+    GPUImageAlphaBlendFilter接受两个输入，在这种情况下为顶部和底部的图像，纹理的位置很重要。-addTarget:atTextureLocation: 设置纹理为正确的输入（位置）。
+
+    在链中的最后一个滤镜调用-useNextFrameForImageCapture然后对两个输入调用-processImage 。这可以确保滤镜知道你想要从中抓取图像然后持有它。
+
+最后，替换processImage的第一行代码: 来调用新的函数:
+
+UIImage * outputImage = [self processUsingGPUImage:inputImage];
+
+就是这样。生成并运行。幽灵看起来和往常一样好！
+
+BuildnRun-3
+
+正如你看到的，GPUImage很容易操作。你也可以在GLSL里制作你自己的着色器并创建你自己的滤镜。查看这里的GPUImage文档来更多的学习如何使用本框架。
+
+在这里下载本节项目中的所有代码。
+下一步？
+
+恭喜！你已经用四种不同方式实现了SpookCam。这里是所有的下载链接：
+
+    SpookCam-Starter
+    SpookCam-Pixel
+    SpookCam-CoreGraphics
+    SpookCam-CoreImage
+    SpookCam-GPUImage
+
+当然，除本教程外还有很多其他有趣的图像处理概念：
+
+    内核和卷积。内核与图像采样滤镜协同工作。例如，模糊滤镜。
+    图像分析。有时候你需要对图像进行深入的分析，例如你想进行人脸识别。Core Image为这个过程提供了CIDetector类。
+
+最后但同样重要的，没有图像处理教程没有提及OpenCV就结束了。
+
+OpenCV是所有图像处理事实上的库，它还有一个iOS的build！然后，它还远远不是轻量级的。这更多用于技术领域，比如特性跟踪。在这里学习更多的OpenCV知识。
+
+这个网站也有OpenCV教程。
+
+下一步是选择一种方法来开始创建你自己革命性的自拍app。不要停止学习！
+
+我真心希望你能喜欢本教程。如果你有任何疑问或意见，请在下面的论坛留言告诉我们。
+
+注: 图片出自于Free Range Stock，由Roxana Gonzalez拍摄。
