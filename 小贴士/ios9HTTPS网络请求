@@ -1,0 +1,21 @@
+错误描述：
+
+App Transport Security has blocked a cleartext HTTP (http://) resource load since it is insecure. Temporary exceptions can be configured via your app‘s Info.plist file.
+
+ 
+
+在iOS9 beta中，苹果将原http协议改成了https协议，使用 TLS1.2 SSL加密请求数据。
+
+解决方法：
+
+在info.plist 加入key
+
+<key>NSAppTransportSecurity</key>
+<dict>
+<key>NSAllowsArbitraryLoads</key>
+<true/>
+</dict>
+
+参考资料:
+
+https://developer.apple.com/library/prerelease/ios/releasenotes/General/WhatsNewIniOS/Articles/iOS9.html#//apple_ref/doc/uid/TP40016198-DontLinkElementID_13
