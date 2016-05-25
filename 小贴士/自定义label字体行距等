@@ -1,0 +1,136 @@
+自定义UILabel设置行距和字间距的各种方法，并根据文本计算高度（不是简单的计算高度）   
+
+1，单纯调节行间距的方法、能够调整行间距，但是不能调整字间距
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, 320, 200)];
+    [label setBackgroundColor:[UIColor blackColor]];
+    [label setFont:[UIFont systemFontOfSize:16]];
+    [label setTextColor:[UIColor whiteColor]];
+    [label setNumberOfLines:0];
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:labelText];
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    [paragraphStyle setLineSpacing:LINESPACE];//调整行间距
+    
+    [attributedString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, [labelText length])];
+    label.attributedText = attributedString;
+    [self.view addSubview:label];
+    [label sizeToFit];
+
+
+
+2、附件中有自定义的ZXHMultiLineLabel，以及使用如下：
+    ZXHMultiLineLabel *readNewsLable =[[ZXHMultiLineLabel alloc] initWithFrame:CGRectZero];
+    readNewsLable.textColor = MAIN_BASE_GRAY_COLOR;
+    readNewsLable.lineBreakMode = NSLineBreakByWordWrapping;
+    readNewsLable.backgroundColor = [UIColor yellowColor];
+    readNewsLable.font = [UIFont fontWithName:contentFontName size:16];
+    [readNewsLable setText:labelText];
+    
+    /*设置label的frame值*/
+    [readNewsLable setFrame:CGRectMake(0, 20, 320, [readNewsLable getAttributedStringHeightWidthValue:320])];
+    
+    NSLog(@"Label高度是多少？ %i", [readNewsLable getAttributedStringHeightWidthValue:320]);
+    
+    readNewsLable.numberOfLines = 0;
+    [self.view addSubview:readNewsLable];
+
+
+3、根据文字和字体，计算文字的特定高度SpecificWidth内的显示高度
+- (CGFloat) initAttributedString:(NSString *)normalString withFont:(NSString *)fontName withSpecificWidth:(CGFloat)inWidth
+{
+    long stringCharacterSpacing = 1.0f;//字间距
+    CGFloat stringLinesSpacing = 4.4f; //行间距
+
+    if(!normalString){
+        return 0.0f;
+    }
+
+//去掉空行
+NSString *myString = [normalString stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
+
+//创建AttributeString
+NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc]initWithString:myString];
+
+//设置字体及大小
+    UIFont * font = [UIFont fontWithName:contentFontName size:16];
+    CTFontRef helveticaBold = CTFontCreateWithName((CFStringRef)font.fontName, font.pointSize, NULL);
+    [attributedString addAttribute:(id)kCTFontAttributeName value:(__bridge id)helveticaBold range:NSMakeRange(0,[attributedString length])];
+
+//设置字间距
+//        long number = 1.5f;
+//    long number = self.characterSpacing;
+    long number = stringCharacterSpacing;
+
+CFNumberRef num = CFNumberCreate(kCFAllocatorDefault,kCFNumberSInt8Type,&number);
+    [attributedString addAttribute:(id)kCTKernAttributeName value:(__bridge id)num range:NSMakeRange(0,[attributedString length])];
+    CFRelease(num);
+    /*
+     if(self.characterSpacing)
+     {
+     long number = self.characterSpacing;
+     CFNumberRef num = CFNumberCreate(kCFAllocatorDefault,kCFNumberSInt8Type,&number);
+     [attributedString addAttribute:(id)kCTKernAttributeName value:(id)num range:NSMakeRange(0,[attributedString length])];
+     CFRelease(num);
+     }
+     */
+
+//设置字体颜色
+//        [attributedString addAttribute:(id)kCTForegroundColorAttributeName value:(id)(self.textColor.CGColor) range:NSMakeRange(0,[attributedString length])];
+    [attributedString addAttribute:(id)kCTForegroundColorAttributeName value:(id)([UIColor grayColor].CGColor) range:NSMakeRange(0,[attributedString length])];
+
+//创建文本对齐方式
+CTTextAlignment alignment = kCTLeftTextAlignment;
+    /*
+    if(self.textAlignment == NSTextAlignmentCenter)
+    {
+        alignment = kCTCenterTextAlignment;
+    }
+    if(self.textAlignment == NSTextAlignmentRight)
+    {
+        alignment = kCTRightTextAlignment;
+    }
+    if(self.textAlignment == NSTextAlignmentLeft)
+    {
+        alignment = kCTTextAlignmentLeft;
+    }
+     */
+//默认左对齐
+    alignment = kCTTextAlignmentLeft;
+
+
+CTParagraphStyleSetting alignmentStyle;
+
+    alignmentStyle.spec = kCTParagraphStyleSpecifierAlignment;
+
+    alignmentStyle.valueSize = sizeof(alignment);
+
+    alignmentStyle.value = &alignment;
+
+//设置文本行间距
+
+    CGFloat lineSpace = stringLinesSpacing;
+
+CTParagraphStyleSetting lineSpaceStyle;
+    lineSpaceStyle.spec = kCTParagraphStyleSpecifierLineSpacingAdjustment;
+    lineSpaceStyle.valueSize = sizeof(lineSpace);
+    lineSpaceStyle.value =&lineSpace;
+
+//设置文本段间距
+    CGFloat paragraphSpacing = 15.0;
+    CTParagraphStyleSetting paragraphSpaceStyle;
+    paragraphSpaceStyle.spec = kCTParagraphStyleSpecifierParagraphSpacing;
+    paragraphSpaceStyle.valueSize = sizeof(CGFloat);
+    paragraphSpaceStyle.value = ¶graphSpacing;
+
+//创建设置数组
+    CTParagraphStyleSetting settings[ ] ={alignmentStyle,lineSpaceStyle,paragraphSpaceStyle};
+    CTParagraphStyleRef style = CTParagraphStyleCreate(settings ,3);
+
+//给文本添加设置
+    [attributedString addAttribute:(id)kCTParagraphStyleAttributeName value:(__bridge id)style range:NSMakeRange(0 , [attributedString length])];
+    CFRelease(helveticaBold);
+
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef) attributedString);   //string 为要计算高度的
+CGSize suggestedSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter,CFRangeMake(0, 0), NULL,CGSizeMake(inWidth, CGFLOAT_MAX), NULL);
+    CFRelease(framesetter);
+    return suggestedSize.height;
+}
