@@ -1,0 +1,206 @@
+ 当你克服重重困难终于开发出了自己的App，下一步就是向App Store提交应用了，这时应该如何操作呢？我的App真的准备好提交了？我敢肯定这些问题将会浮现在你的脑海。基于这篇教程，我将告诉你一个完整的提交过程。
+
+ 
+
+推荐阅读：App Store提交上线和市场推广专题
+
+ 
+
+介绍
+我们都知道苹果审核的过程就像是在“黑箱”操作，但这并不妨碍你为这个审核过程做一些事先的准备。苹果的App Store审核指南已经告诉你哪些是允许的，哪些是不允许的。当你第一次提交你的应用到苹果的时候，这是一个令人兴奋而但又伤脑筋的过程。即使再有经验的开发者也会措手不及，毕竟这事不像写代码每天都干。
+
+ 
+
+前提
+在向App Store提交应用的前提是你已经成为苹果iOS开发者项目成员之一，你已经向苹果缴纳了99美元/年的费用。你可以通过此链接注册成为苹果iOS开发者项目成员。点击Enroll Now按钮。
+向App Store提交应用
+
+ 图1.注册成为iOS开发者
+
+1.你的应用已经准备好了吗？
+
+Step1.测试
+写完最后一行代码或者执行完最后一个功能并不意味着你的App已经完成了，你是否让你的应用在多个设备上进行测试了？你的应用是否有内存泄露的问题？你的应用程序是否总是崩溃？这几年，iOS设备市场规模增长迅猛，你必须保证你的应用已经在尽可能多的设备上通过测试。常见的问题比如你是否在iPhone 5的4寸屏幕到iPad Mini的7.9寸屏幕上都通过了测试。
+
+ 
+
+iOS模拟器非常有用，但它是在Mac上运行的，内存和处理能力要比你口袋中的手机强大很多，一款iPhone 3GS和iPhone 5的性能差别更不用多说。作为iOS开发者，你可不能冒着风险长期使用一款过时的iOS设备来创建和维护App，即便App可以在老的iOS设备上很好地运行，但不代表也可以在新设备上跑的顺畅。
+
+ 
+
+苹果的审核是封闭的，但能减少不完善的性能表现给用户带来的糟糕体检。如果你的应用时常崩溃，或者启动后不久运行速递变得缓慢迟滞，那在向App Store提交之前你还有不少工作要做。即便苹果审核人员不能发现App存在的问题，但用户会发现。如果用户体验很差，那么用户会给你的差评或者低分，进一步影响到应用的销售和下载。
+
+ 
+
+Step2.规则和指南
+就像我前面所说的，苹果为开发者提供了很多文档资料，开发者尤其要注意iOS人机交互指南和App Store审核指南，不过不少开发者没有精力或者难以静下心来认真研读这些文档，那么你的应用将会因为这些文档中列出的要求而被一再拒绝。
+
+ 
+
+再退一步说，即便你没有研读iOS人机交互指南和App Store审核指南，但开发者也要知道大家常说的那些规则，如下我列出了一些你的应用应该和不应该做的事情。
+
+你的应用：
+不能崩溃
+不能使用私有API，
+不能复制原生app的功能，
+应该使用IAP（应用内付费）金融交易
+不能在用户不知情的情况下使用相机或者麦克风
+应该使用有版权的图片
+
+ 
+
+这些只是上边所说的文档内容中很小的一部分。iOS人机交互指南和App Store审核指南内容更多是非常琐碎的。但有的小地方你也许会不经意的违反。比如，在苹果使用启用自家地图之前，MapKit framework使用的是谷歌地图，用户也非常清楚谷歌的logo会放在每张地图的左下角，如果你的应用的用户界面覆盖了谷歌的logo，那么苹果就会拒绝你的应用。虽然这非常琐碎，但也是不少开发者经常“犯错误”的地方。
+
+
+2.预先准备
+
+在你开始将程序提交到App Store之前，你需要有一个App ID，一个有效的发布证书，以及一个有效的Provisioning profile。下面来看看它们各自的作用。
+
+ 
+
+Step 1: App ID（应用ID）
+App ID是识别不同应用程序的唯一标示符。每个app都需要一个App ID或者app标识。目前有两种类型的App标识：一个是精确的App ID（explicit App ID），一个是通配符App ID（wildcard App ID）。使用通配符的App ID可以用来构建和安装多个程序。尽管通配符App ID非常方便，但是一个精确的App ID也是需要的，尤其是当App使用iCloud 或者使用其他iOS功能的时候，比如Game Center、Push Notifications或者IAP。
+
+ 
+
+如果你不确定什么样的App ID适合你的项目，我推荐你读下苹果关于这一主题的文档：Technical Note QA1713。
+
+ 
+
+Step 2: Distribution Certificate(发布证书)
+iOS应用都有一个安全证书用于验证开发者身份和签名。为了可以向App Store提交app，你需要创建一个iOS provisioning profile 。首先需要创建一个distribution certificate（发布证书），过程类似于创建一个development certificate（开发证书）。如果你已经在实体设备上测试你的App，那么你对创建development certificate就已经很熟悉了。
+
+ 
+
+如果对此不熟悉，我建议你读下苹果关于signing certificates和provisioning profiles的详细指导。
+
+ 
+
+Step 3: Provisioning Profile(配置文件)
+一旦你创建了App ID和distribution certificate，你可以创建一个iOS provisioning profile以方便在App Store中销售你的App。不过，你不能使用和ad hoc distribution相同的provisioning profile。你需要为App Store分销创建一个单独的provisioning profile，如果你使用通配符App ID，那么你的多个app就可以使用相同的provisioning profile。
+
+ 
+
+Step 4: Build Settings(生成设置)
+配置App ID、distribution certificate 和provisioning profile已经完成，是时候配置Xcode中target的build settings了。在Xcode Project  Navigator的targets列表中选择一个target，打开顶部的Build Settings选项，然后更新一下Code Signing来跟之前创建的distribution provisioning profile相匹配。最近添加的provisioning profiles有时候不会立马就在build settings的Code Signing中看到，重启一下Xcode就可以解决这个问题。
+
+图2：配置Target的Build Settings
+
+
+Step 5: Deployment Target(部署目标)
+非常有必要说下deployment target，Xcode中每个target都有一个deployment target，它可以指出app可以运行的最小版本。不过，一旦应用在App Store中生效，再去修改deployment target，你要考虑到一定后果。如果你在更新app的时候提高了deployment target，但是已经购买应用的用户并没有遇到新的deployment target，那么应用就不能在用户的移动设备上运行。如果用户通过iTunes (不是设备)下载了一个更新过的app，然后替代了设备上原先的版本，最后却发现新版本不能在设备上运行，这确实是个问题。
+
+ 
+
+对此我有两个方法
+(1) 当你决定提高现有app的deployment target时，要在新版本的版本注释中进行说明。如果你提前告知用户，那么至少有一点，你已经尽力阻止问题的发生了。
+
+ 
+
+(2) 对于一款新app，我经常会把deployment target设置为最近发布的系统版本。因为新iOS版本发布后，渗透率的增长速度是令人难以置信的。很多人认为提高deployment target会失去大部分市场，这个说法并不准确，比如iOS 6，iOS 6发布后一个月，超过60%的设备已经进行了更新。但对Android而言，就是另外一回事了，Android用户并不会像iOS用户那样热衷于更新操作系统版本。
+
+
+3. Assets(资源包)
+
+Step 1: Icons(图标)
+Icon是App中不可分割的一部分，你要确保icon尺寸不会出现差错。
+iTunes Artwork: 1024px x 1024px (required)
+iPad/iPad Mini: 72px x 72px and 114px x 114px (required)
+iPhone/iPod Touch: 57px x 57px and 114px x 114px (required)
+Search Icon: 29px x 29px and 58px x 58px (optional)
+Settings Application: 50px x 50px and 100px x 100px (optional)
+
+ 
+
+Step 2: 屏幕截图
+屏幕截图的作用不言而喻，你可以为每个app上传5张截图，虽然至少需要上传一张，可能很少有人会只上传一张图片。另外，你还需要分别为iPhone/iPod Touch和iPad/iPad Mini准备不同的屏幕截图。这也是不小的工作量，但却能展示应用的另一面。Shiny Development开发的一款售价6.99美元的Mac软件Status Magic可以为你节省不少时间。Status Magic可以帮你把状态栏放在截图的正确位置。
+
+ 
+
+屏幕截图和icon是应用给用户的第一感觉，直接关系到用户会不会购买。不过，你所上传的屏幕截图也不一定非得是实际的截图，看看Where’s My Water? 截图可以通过使用此策略，更具吸引力和说服力。
+
+ 
+
+Step 3: 元数据
+在提交应用之前，要管理好app的元数据，包括1应用名称、2版本号、3主要类别，4简洁的描述，5关键词，6.支持URL。如果你需要更新应用，你还要提供新增加的版本内容。
+
+ 
+
+如果你的应用需要注册吗，你还得向苹果提供一个测试账户或者demo账户，这样审核人员就能很快进入app，而不用再注册账号。
+
+ 
+
+4. 提交准备
+
+Xcode 4以后，开发者提交应用的过程就简单多了，可以直接使用Xcode进行提交。首先在iTunes Connect中创建app，访问iTunes Connect，使用你的iOS开发者账号登陆，点击右边的“Manage Your Apps”，点击左上角的“Add New App”，选择“iOS App”，然后完成表格。
+
+ 
+图3.浏览iTunes Connect页面
+
+Step 1: 完成基本信息
+出现在App Store中App的名字要做到独一无二, 这个名字可以不同于主屏幕icon下边的名字，不过推荐使用相同的名字。
+
+ 
+
+SKU Number是一个用来识别app的特殊字符串。我经常使用app的bundle identifier。最下边是app的Bundle ID，你可以从下来菜单中选择通配符App ID或者准确的App ID。
+
+图4.指定名称、SKU Number以及Bundle ID
+
+
+ 
+Step 2:价格和有效性
+下一步，确定app的价格和有效性。苹果已经确定好了价格梯度，所以你不需要分别选择各个国家中app售价，你只需要指定在哪个国家的应用商店出售即可。在App Store显示这款应用之后，这一过程中填的信息还可以被修改，也就是说你可以更改价格，并且不需要提交或更新。
+
+图5.指定价格和有效性
+
+Step 3: 元数据
+我们已经说过元数据了，不过还没有说应用评级。根据应用的内容和功能，苹果会给应用一定评级，比如很多应用是4+，500px是17+。除了告诉用户app的内容和功能，也可以让孩子的父母放心。
+
+ 
+
+如果你的应用等级跟内容不符合，苹果也会拒绝你的应用。
+
+图6.键入应用元数据和评级
+
+
+ Step 4: 准备上传二进制文件
+提交完app的元数据后，你会看到关于app的一些摘要信息，你应该在提交之前看看app的版本。点击“View Details”按钮，再点击右上角的“Ready to Upload Binary”。然后系统会问你一个或几个关于app的问题，完成后，你会看到提示信息，告诉你准备上传二进制文件。app的状态就变成“Waiting for Upload”。
+
+图7.App概要
+
+
+ 5. 上传二进制文件
+
+为了上传程序，需要为程序创建一个archive。你只能在一台真实设备上创建一个archive。如果你在active scheme中选择了iOS Simulator，那么在Xcode的Product菜单中Archive选项是灰色不可选的。连接一台iOS设备到Mac机器上，然后在active scheme中选择这台设备，然后选择Xcode中Product菜单里面的Archive。
+
+图8.使用Xcode对应用程序进行归档（Archiving）
+
+
+ 如果一切正常的话，现在你会获得一个archive，并且Xcode的Organizer会自动打开，并显示出刚刚生成的archive。在列表中选中archive，然后点击右边的“Distribute”按钮。在显示出来的画面中，选择“Submit to the iOS App Store”。然后输入你的iOS开发者账号进行认证。接着选择Application 和Code Signing Identity。
+
+ 
+
+应用程序的二进制文件会上传到苹果的服务器中——在这个过程中，你的程序同样需要被验证。如果在验证过程中遇到了错误，程序的提交流程就会失败。验证处理非常有用，如果程序中有一些错误，苹果的 App Store评审团会告诉你具体原因。
+
+图9.使用Xcode对应用程序进行归档（Archiving）
+ 
+
+图10.把应用提交至iOS App Store
+ 
+
+图11.键入iOS开发者
+ 
+
+图12.选择Application和Code Signing Identity
+ 
+
+图13.验证失败会有错误提示
+
+
+6.等待
+上传完成后，app状态就变成“Waiting for Review”了。
+
+ 
+
+总结
+新应用提交过程比较长，只是更新的话就很快了。如果你的应用需要进行本地化就会涉及到很多，因为一些基本的信息都需要进行本地化。不过，这个过程是值得的，毕竟更多的用户会给你带来更多下载和利润。
