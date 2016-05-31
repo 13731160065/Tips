@@ -1,0 +1,31 @@
+- (NSDictionary *)turnToString:(NSDictionary *)aDic {
+    NSMutableDictionary * dic = [NSMutableDictionary dictionaryWithDictionary:aDic];
+    NSArray * keysArr = [dic allKeys];
+    NSArray * valuesArr = [dic allValues];
+    [keysArr enumerateObjectsUsingBlock:^(NSString * _Nonnull aKey, NSUInteger idx, BOOL * _Nonnull stop) {
+        id aValue = valuesArr[idx];
+        if ([aValue isKindOfClass:[NSDictionary class]]) {
+            dic[aKey] = [self turnToString:dic];
+        } else if ([aValue isKindOfClass:[NSArray class]]) {
+            NSMutableArray * arrr = [NSMutableArray array];
+            [aValue enumerateObjectsUsingBlock:^(id  _Nonnull aaa, NSUInteger idx, BOOL * _Nonnull stop) {
+                if ([aaa isKindOfClass:[NSDictionary class]]) {
+                    [arrr addObject:[self turnToString:aaa]];
+                } else if ([aaa isKindOfClass:[NSArray class]]) {
+                    [arrr addObject:[self turnToString:aaa]];
+                } else {
+                    [arrr addObject:aaa];
+                }
+                dic[aKey] = arrr;
+            }];
+        } else {
+            if ([aValue isKindOfClass:[NSNull class]]) {
+                dic[aKey] = @"";
+            } else {
+                dic[aKey] = [NSString stringWithFormat:@"%@", aValue];
+            }
+        }
+    }];
+    
+    return dic;
+}
