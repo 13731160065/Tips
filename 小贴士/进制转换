@@ -1,110 +1,45 @@
-//任何整型转2进制字符串
 - (NSString *)intToStr2:(long)innn {
+    //预判断2进制位数
     long num = [NSString stringWithFormat:@"%lx", innn].length*4;
     bool a[num];
     long i;
+    
+    //从后往前便利入参，取2的模模存入数组，再除以2
     for (i = num-1; i >= 0; i--) {
         a[i] = innn % 2;
         innn /= 2;
     }
+    
+    //拼接每一位二进制
     NSString * strr = @"";
     for (i = 0; i < num; i++) {
         strr = [strr stringByAppendingFormat:@"%d", a[i]];
     }
+    
     return strr;
 }
 
 //任何整型转2进制字符串
 - (NSString *)intToStr2b:(long)innn {
     //生成对照表
-    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
-    for (int i = 0; i < 16; i++) {
-        switch (i) {
-            case 0:
-            {
-                [dic setObject:@"0000" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 1:
-            {
-                [dic setObject:@"0001" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 2:
-            {
-                [dic setObject:@"0010" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 3:
-            {
-                [dic setObject:@"0011" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 4:
-            {
-                [dic setObject:@"0100" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 5:
-            {
-                [dic setObject:@"0101" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 6:
-            {
-                [dic setObject:@"0110" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 7:
-            {
-                [dic setObject:@"0111" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 8:
-            {
-                [dic setObject:@"1000" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 9:
-            {
-                [dic setObject:@"1001" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 10:
-            {
-                [dic setObject:@"1010" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 11:
-            {
-                [dic setObject:@"1011" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 12:
-            {
-                [dic setObject:@"1100" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 13:
-            {
-                [dic setObject:@"1101" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 14:
-            {
-                [dic setObject:@"1110" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-            case 15:
-            {
-                [dic setObject:@"1111" forKey:[NSString stringWithFormat:@"%x", i]];
-            }
-                break;
-                
-            default:
-                break;
-        }
-    }
+    NSDictionary * dic = @{
+                           @"0":@"0000",
+                           @"1":@"0001",
+                           @"2":@"0010",
+                           @"3":@"0011",
+                           @"4":@"0100",
+                           @"5":@"0101",
+                           @"6":@"0110",
+                           @"7":@"0111",
+                           @"8":@"1000",
+                           @"9":@"1001",
+                           @"a":@"1010",
+                           @"b":@"1011",
+                           @"c":@"1100",
+                           @"d":@"1101",
+                           @"e":@"1110",
+                           @"f":@"1111"
+                           };
     
     //转16进制
     NSString * ss = [NSString stringWithFormat:@"%lx", innn];
@@ -119,5 +54,3 @@
     
     return returnStr;
 }
-
-//
