@@ -1,0 +1,123 @@
+//任何整型转2进制字符串
+- (NSString *)intToStr2:(long)innn {
+    long num = [NSString stringWithFormat:@"%lx", innn].length*4;
+    bool a[num];
+    long i;
+    for (i = num-1; i >= 0; i--) {
+        a[i] = innn % 2;
+        innn /= 2;
+    }
+    NSString * strr = @"";
+    for (i = 0; i < num; i++) {
+        strr = [strr stringByAppendingFormat:@"%d", a[i]];
+    }
+    return strr;
+}
+
+//任何整型转2进制字符串
+- (NSString *)intToStr2b:(long)innn {
+    //生成对照表
+    NSMutableDictionary * dic = [NSMutableDictionary dictionary];
+    for (int i = 0; i < 16; i++) {
+        switch (i) {
+            case 0:
+            {
+                [dic setObject:@"0000" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 1:
+            {
+                [dic setObject:@"0001" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 2:
+            {
+                [dic setObject:@"0010" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 3:
+            {
+                [dic setObject:@"0011" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 4:
+            {
+                [dic setObject:@"0100" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 5:
+            {
+                [dic setObject:@"0101" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 6:
+            {
+                [dic setObject:@"0110" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 7:
+            {
+                [dic setObject:@"0111" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 8:
+            {
+                [dic setObject:@"1000" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 9:
+            {
+                [dic setObject:@"1001" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 10:
+            {
+                [dic setObject:@"1010" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 11:
+            {
+                [dic setObject:@"1011" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 12:
+            {
+                [dic setObject:@"1100" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 13:
+            {
+                [dic setObject:@"1101" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 14:
+            {
+                [dic setObject:@"1110" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+            case 15:
+            {
+                [dic setObject:@"1111" forKey:[NSString stringWithFormat:@"%x", i]];
+            }
+                break;
+                
+            default:
+                break;
+        }
+    }
+    
+    //转16进制
+    NSString * ss = [NSString stringWithFormat:@"%lx", innn];
+    
+    //结果
+    NSString * returnStr = @"";
+    
+    //每一位做对照
+    for (int i = 0; i < ss.length; i++) {
+        returnStr = [returnStr stringByAppendingString:dic[[NSString stringWithFormat:@"%c", [ss characterAtIndex:i]]]];
+    }
+    
+    return returnStr;
+}
+
+//
