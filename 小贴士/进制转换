@@ -54,3 +54,24 @@
     
     return returnStr;
 }
+
+//二进制字符串转整型
+- (long)str2ToInt10:(NSString *)innn {
+    //补齐4的倍数位
+    for (int i = 0; i < innn.length%4; i++) {
+        innn = [@"0" stringByAppendingString:innn];
+    }
+    
+    //遍历二进制字符串，每位有1的地方，算出2的他所在位置次方的得数，累加
+    long sum = 0;
+    int j = 0;
+    for (int i = (int)innn.length-1; i >= 0; i--) {
+        long aa = [innn characterAtIndex:i]-'0';
+        if (aa) {
+            sum += (int)pow(2, j);
+        }
+        j++;
+    }
+    
+    return sum;
+}
