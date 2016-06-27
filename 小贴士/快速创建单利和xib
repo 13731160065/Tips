@@ -67,7 +67,7 @@ return [[NSBundle mainBundle] loadNibNamed:NSString_NibName owner:nil options:ni
 - (instancetype)initWithXibFrame:(CGRect)frame {\
     NibName_NSString * abcdefg = [[NSBundle mainBundle] loadNibNamed:@#NibName_NSString owner:nil options:nil][0];\
     [abcdefg setFrame:frame];\
-    return a;\
+    return abcdefg;\
 }
 
 #pragma mark end
