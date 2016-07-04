@@ -1,0 +1,12 @@
+<#返回值#> <#函数名#>(int argCount, ...) {
+    va_list aList;//初始化一个栈式列表
+    va_start(aList, argCount);//初始化栈顶指针
+    
+    while (argCount--) {
+        <#变量类型#> arg = va_arg(aList, <#变量类型#>);
+        <#代码段#>
+    }
+    
+    va_end(aList);//将指针无效化
+    return <#返回值#>;
+}
