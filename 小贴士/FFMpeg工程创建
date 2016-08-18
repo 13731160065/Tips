@@ -1,0 +1,16 @@
+FFMpeg工程创建
+1.创建一个工程
+2.将编译好的include和lib拖入工程
+3.将build settings中的header searth path设置为include的路径。例如：$(SRCROOT)/include
+4.导入以下框架:
+	VideoToolbox.framework
+	CoreMedia.framework
+	MediaPlayer.framework
+	libbz2.tbd
+	lib.tbd
+	libiconv.tbd
+5.测试一下
+	代码如下:
+	#import "avformat.h"
+	av_register_all();
+6.编译成功
