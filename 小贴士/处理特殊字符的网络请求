@@ -1,0 +1,17 @@
+//处理特殊字符网络请求
+AFHTTPRequestOperationManager *mgr = [AFHTTPRequestOperationManager manager];
+mgr.responseSerializer = [AFHTTPResponseSerializer serializer];
+// 2.发送请求
+[mgr GET:<#url#> parameters:<#param#> success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    
+    NSString * sss = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+    sss = [[sss componentsSeparatedByString:@"\n"] componentsJoinedByString:@""];
+    sss = [[sss componentsSeparatedByString:@"\r"] componentsJoinedByString:@""];
+    sss = [[sss componentsSeparatedByString:@"\t"] componentsJoinedByString:@""];
+    responseObject = [NSJSONSerialization JSONObjectWithData:[sss dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableLeaves error:nil];
+    
+    <#用responseObject#>
+    
+} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    [MBProgressHUD showError:Failure];
+}];
