@@ -1,0 +1,219 @@
+
+
+CoreMotion框架的使用
+
+CoreMotion框架十分强大，它不仅将加速度传感器和螺旋仪传感器进行了统一配置和管理，还为我们封装了许多算法，我们可以直接获取到设备的运动状态信息。
+
+1、CoreMotion负责处理的数据
+
+CoreMotion负责处理四种数据，一种是加速度数据，一种是螺旋仪数据，一种是磁感应数据，还有一种是前三种数据通过复杂运算得到的设备的运动数据。几个主要的类如下：
+
+CMAccelerommterData:设备的加速度数据
+
+typedef struct {
+    double x;
+    double y;
+    double z;
+} CMAcceleration;
+@interface CMAccelerometerData : CMLogItem
+{
+@private
+    id _internal;
+}
+//加速度的数据对象
+@property(readonly, nonatomic) CMAcceleration acceleration;
+
+@end
+CMGyroData:设备的螺旋仪数据
+
+typedef struct {
+    double x;
+    double y;
+    double z; 
+} CMRotationRate;
+@interface CMGyroData : CMLogItem
+{
+@private
+    id _internal;
+}
+//螺旋仪数据对象
+@property(readonly, nonatomic) CMRotationRate rotationRate;
+
+@end
+CMMagnetometerData：磁感应信息
+
+typedef struct {
+    double x;
+    double y;
+    double z;
+} CMMagneticField;
+
+@interface CMMagnetometerData : CMLogItem
+{
+@private
+    id _internal;
+}
+
+//磁力对象
+@property(readonly, nonatomic) CMMagneticField magneticField;
+
+@end
+
+
+CMDeviceMotion:设备的运动状态数据
+
+@interface CMDeviceMotion : CMLogItem
+{
+@private
+    id _internal;
+}
+//设备的状态对象
+@property(readonly, nonatomic) CMAttitude *attitude;
+//设备的角速度
+@property(readonly, nonatomic) CMRotationRate rotationRate;
+//设备的重力加速度
+@property(readonly, nonatomic) CMAcceleration gravity;
+//用户嫁给设备的加速度 设备的总加速度为重力加速度叫上用户给的加速度
+@property(readonly, nonatomic) CMAcceleration userAcceleration;
+//设备的磁场矢量对象
+@property(readonly, nonatomic) CMCalibratedMagneticField magneticField NS_AVAILABLE(NA,5_0);
+相比之前两个类，这个就比较复杂了，attitude对象中又封装了许多设备的状态属性：
+
+@interface CMAttitude : NSObject <NSCopying, NSSecureCoding>
+{
+@private
+    id _internal;
+}
+//设备的欧拉角roll
+@property(readonly, nonatomic) double roll;
+//设备的欧拉角pitch
+@property(readonly, nonatomic) double pitch;
+//设备的欧拉角yaw
+@property(readonly, nonatomic) double yaw;
+//设备状态的旋转矩阵
+@property(readonly, nonatomic) CMRotationMatrix rotationMatrix;
+//设备状态的四元数
+@property(readonly, nonatomic) CMQuaternion quaternion;
+@end
+2、CoreMotion的使用
+CoreMotion有两种使用方式，一种是我们主动向manager索取数据，一种是通过回调让manager将数据传给回调给我们，这两种方式分别称作pull方式和push方式。
+pull方式：
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view, typically from a nib.
+    //创建管理对象
+    manager= [[CMMotionManager alloc]init];
+    //开启加速度更新
+    [manager startAccelerometerUpdates];
+    //开启螺旋仪更新
+    [manager startGyroUpdates];
+    //开启状态更新
+    [manager startMagnetometerUpdates];
+    //创建定时器
+    NSTimer * time = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(updata) userInfo:nil repeats:YES];
+    time.fireDate = [NSDate distantPast];
+}
+
+-(void)updata{
+//获取数据
+    NSLog(@"%f,%f,%f\n%f,%f,%f",manager.accelerometerData.acceleration.x,manager.accelerometerData.acceleration.y,manager.accelerometerData.acceleration.z,manager.gyroData.rotationRate.x,manager.gyroData.rotationRate.y,manager.gyroData.rotationRate.z);
+  
+   
+}
+push方式：
+
+   //创建管理对象
+    manager= [[CMMotionManager alloc]init];
+    //在当前线程中回调
+    [manager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMAccelerometerData * _Nullable accelerometerData, NSError * _Nullable error) {
+         NSLog(@"%f,%f,%f\n%f,%f,%f",manager.accelerometerData.acceleration.x,manager.accelerometerData.acceleration.y,manager.accelerometerData.acceleration.z,manager.gyroData.rotationRate.x,manager.gyroData.rotationRate.y,manager.gyroData.rotationRate.z);
+    }];
+3、CoreMotion的更多属性和方法
+@interface CMMotionManager : NSObject
+{
+@private
+    id _internal;
+}
+//设置加速度传感器更新帧率
+@property(assign, nonatomic) NSTimeInterval accelerometerUpdateInterval __TVOS_PROHIBITED;
+//加速度传感器是否可用
+@property(readonly, nonatomic, getter=isAccelerometerAvailable) BOOL accelerometerAvailable __TVOS_PROHIBITED;
+//加速度传感器是否激活
+@property(readonly, nonatomic, getter=isAccelerometerActive) BOOL accelerometerActive __TVOS_PROHIBITED;
+//加速度传感器数据对象
+@property(readonly, nullable) CMAccelerometerData *accelerometerData __TVOS_PROHIBITED;
+//pull方式开始更新加速度数据
+- (void)startAccelerometerUpdates __TVOS_PROHIBITED;
+//push方式更新加速度数据
+- (void)startAccelerometerUpdatesToQueue:(NSOperationQueue *)queue withHandler:(CMAccelerometerHandler)handler __TVOS_PROHIBITED;
+//停止更新加速度数据
+- (void)stopAccelerometerUpdates __TVOS_PROHIBITED;
+//螺旋仪传感器刷新帧率
+@property(assign, nonatomic) NSTimeInterval gyroUpdateInterval __TVOS_PROHIBITED;
+//螺旋仪是否可用
+@property(readonly, nonatomic, getter=isGyroAvailable) BOOL gyroAvailable __TVOS_PROHIBITED;
+//螺旋仪是否激活
+@property(readonly, nonatomic, getter=isGyroActive) BOOL gyroActive __TVOS_PROHIBITED;
+//螺旋仪数据
+@property(readonly, nullable) CMGyroData *gyroData __TVOS_PROHIBITED;
+//pull方式开始更新螺旋仪
+- (void)startGyroUpdates __TVOS_PROHIBITED;
+//push方式开始更新螺旋仪
+- (void)startGyroUpdatesToQueue:(NSOperationQueue *)queue withHandler:(CMGyroHandler)handler __TVOS_PROHIBITED;
+//停止更新螺旋仪
+- (void)stopGyroUpdates __TVOS_PROHIBITED;
+//磁力传感更新帧率
+@property(assign, nonatomic) NSTimeInterval magnetometerUpdateInterval NS_AVAILABLE(NA,5_0) __TVOS_PROHIBITED;
+//设备磁力传感器是否可用
+@property(readonly, nonatomic, getter=isMagnetometerAvailable) BOOL magnetometerAvailable NS_AVAILABLE(NA,5_0) __TVOS_PROHIBITED;
+//设备磁力传感器是否激活
+@property(readonly, nonatomic, getter=isMagnetometerActive) BOOL magnetometerActive NS_AVAILABLE(NA,5_0) __TVOS_PROHIBITED;
+//设备磁力状态数据
+@property(readonly, nullable) CMMagnetometerData *magnetometerData NS_AVAILABLE(NA,5_0) __TVOS_PROHIBITED;
+//pull方式更新设备磁力状态
+- (void)startMagnetometerUpdates NS_AVAILABLE(NA,5_0) __TVOS_PROHIBITED;
+//push方式更新设备磁力状态
+- (void)startMagnetometerUpdatesToQueue:(NSOperationQueue *)queue withHandler:(CMMagnetometerHandler)handler NS_AVAILABLE(NA,5_0) __TVOS_PROHIBITED;
+//停止更新设备状态
+- (void)stopMagnetometerUpdates NS_AVAILABLE(NA,5_0) __TVOS_PROHIBITED;
+//设备状态更新帧率
+@property(assign, nonatomic) NSTimeInterval deviceMotionUpdateInterval __TVOS_PROHIBITED;
+//参考器枚举
++ (CMAttitudeReferenceFrame)availableAttitudeReferenceFrames NS_AVAILABLE(NA,5_0) __TVOS_PROHIBITED;
+@property(readonly, nonatomic) CMAttitudeReferenceFrame attitudeReferenceFrame NS_AVAILABLE(NA,5_0) __TVOS_PROHIBITED;
+//设备运动信息是否可用
+@property(readonly, nonatomic, getter=isDeviceMotionAvailable) BOOL deviceMotionAvailable __TVOS_PROHIBITED;
+//设备运动信息是否激活
+@property(readonly, nonatomic, getter=isDeviceMotionActive) BOOL deviceMotionActive __TVOS_PROHIBITED;
+//设备运动信息对象
+@property(readonly, nullable) CMDeviceMotion *deviceMotion __TVOS_PROHIBITED;
+//pull方式开始刷新运动信息
+- (void)startDeviceMotionUpdates __TVOS_PROHIBITED;
+//push方式开始刷新运动信息
+- (void)startDeviceMotionUpdatesToQueue:(NSOperationQueue *)queue withHandler:(CMDeviceMotionHandler)handler __TVOS_PROHIBITED;
+//使用某个参考系
+- (void)startDeviceMotionUpdatesUsingReferenceFrame:(CMAttitudeReferenceFrame)referenceFrame NS_AVAILABLE(NA,5_0) __TVOS_PROHIBITED;
+//push方式开始刷新设备运动信息
+- (void)startDeviceMotionUpdatesUsingReferenceFrame:(CMAttitudeReferenceFrame)referenceFrame toQueue:(NSOperationQueue *)queue withHandler:(CMDeviceMotionHandler)handler NS_AVAILABLE(NA,5_0) __TVOS_PROHIBITED;
+//停止刷新设备运动信息
+- (void)stopDeviceMotionUpdates __TVOS_PROHIBITED;
+
+距离传感器的应用
+iPhone手机中内置了距离传感器，位置在手机的听筒附近，当我们在打电话的时候靠近听筒，手机的屏幕会自动熄灭，这就靠距离传感器来控制。
+在我们开发app时，如果需要，也可以调用距离传感器的一些接口方法。距离传感器的接口十分简单，主要通过通知中心来对距离的改变进行通知。
+首先，我们需要开启距离传感器应用：
+
+[UIDevice currentDevice].proximityMonitoringEnabled=YES;
+监听距离改变的通知：
+
+[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notice) name:UIDeviceProximityStateDidChangeNotification object:nil];
+在回调方法中，我们可以通过下面这个属性来监听距离状态：
+
+-(void)notice{
+    if ([UIDevice currentDevice].proximityState) {
+        NSLog(@"近距离");
+    }else{
+        NSLog(@"远距离");
+    }
+}
