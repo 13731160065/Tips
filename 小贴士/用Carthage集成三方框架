@@ -1,0 +1,14 @@
+Carthage
+  ----去中心化的Cocoa依赖管理器
+优点：比cocoapods耦合性更低，简单易用，已经支持大多三方库，并且支持swift
+
+那么如何使用呢？下面进入正题：
+1.安装Carthage最简单的方式是用Homebrew，也就是brew。安装方法就不废话了，自行查找吧。
+2.在终端输入：brew install carthage
+3.安装成功！就是这么简单，比cocoapods简单多了吧。下面就是将三方库配置到你的工程中了。
+4.在终端中cd到你工程的根目录
+5.创建Cartfile
+6.在Cartfile中添加内容，格式大概是github "github上三方库的repo名"，例如（github "AFNetworking/AFNetworking"）
+7.在终端输入carthage update
+8.等运行结束后，你的工程中会多一个Carthage文件夹，里边有iOS，在里边就有你要的***.framework，拖到项目中就可以了
+9.更新三方库的时候只需在项目根目录下carthage update就可以了
