@@ -1,0 +1,32 @@
+让你的框架支持Carthage
+
+想必看本文的你已经会使用Carthage了，也明白Carthage的好处，我就不废话了，直接上主题。
+这东西我各处翻查资料，琢磨了一天才搞明白如何让自己的项目支持Carthage集成，走了很多弯路，遇到了很多问题，不过终究还是搞出来了，update自己的框架感觉还是很爽的～
+
+言归正传，怎么让自己的框架支持Carthage呢？
+
+1.创建一个Framework工程：
+  打开xcode，选择Creat a new Xcode project，选择iOS下的Framework & Library
+  
+2.配置一下你的工程文件
+  1>选择你的工程文件
+  2>选择framework所在的Target
+  3>选择Build Phases
+  4>点击Header左下角的+号把你要暴露的头文件添加到Public里面（默认添加到Project里面，用鼠标把它拽过去）
+  5>在framework的BuildSettings的Packaging里面,把Produce Module Name 和 Produce Name改成MyCarthage(其实默认就是这样)
+  6>选择target上Manager Schemes，勾上shared，这样Cartage就可以编译你的工程
+==================================================================================================
+  tips:
+        如果你使用了类别,那么你需要在Build Settings的Linking的Other Linker Flags里加上-all_load
+        如果你想你的工程支持bitcode,需要在Other C Flags 里加上-fembed-bitcode
+==================================================================================================
+
+3.这样基本就完成了，可以上传到github中(Carthage只支持github)
+4.很重要的一步，上github到你的repo里，点release，必须发布一个版本或创建一个tag才能carthage update成功
+==================================================================================================
+  tips:
+        可以用这个指令测试你的工程是不是支持好了Carthage，进入这个工程的根目录
+        carthage build --no-skip-current
+==================================================================================================
+
+enjoy ('-')
