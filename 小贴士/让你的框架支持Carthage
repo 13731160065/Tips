@@ -14,7 +14,7 @@
   3>选择Build Phases
   4>点击Header左下角的+号把你要暴露的头文件添加到Public里面（默认添加到Project里面，用鼠标把它拽过去）
   5>在framework的BuildSettings的Packaging里面,把Produce Module Name 和 Produce Name改成MyCarthage(其实默认就是这样)
-  6>选择target上Manager Schemes，勾上shared，这样Cartage就可以编译你的工程
+  6>选择target上Manager Schemes，勾上shared，这样Carthage就可以编译你的工程
 ==================================================================================================
   tips:
         如果你使用了类别,那么你需要在Build Settings的Linking的Other Linker Flags里加上-all_load
