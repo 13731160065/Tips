@@ -1,0 +1,13 @@
+if (![challenge.protectionSpace.authenticationMethod isEqualToString:@"NSURLAuthenticationMethodServerTrust"]) return;
+    /*
+     NSURLSessionAuthChallengeUseCredential 使用证书
+     NSURLSessionAuthChallengePerformDefaultHandling  忽略证书 默认的做法
+     NSURLSessionAuthChallengeCancelAuthenticationChallenge 取消请求,忽略证书
+     NSURLSessionAuthChallengeRejectProtectionSpace 拒绝,忽略证书
+     */
+
+    NSURLCredential *credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+
+    completionHandler(NSURLSessionAuthChallengeUseCredential,credential);
+    
+    
