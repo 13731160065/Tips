@@ -3,15 +3,16 @@
 2.创建一个你要存储代码的文件夹名字随意（也就是仓库repository），命令行[mkdir ~/Desktop/svn/iOS]（在刚才创建的svn文件夹中再创建一个名为iOS的文件夹）
 3.初始化刚才创建的存储代码的文件夹（或者说初始化仓库，这个文件夹以下简称仓库），命令行[svnadmin create ~/Desktop/svn/iOS]（初始化刚才传键的名为iOS的文件夹）
 4.初始化完仓库后，里边会有很多文件，在仓库中的conf文件夹中有一些配置文件，我们接下来需要修改这些文件。
-4-1.修改仓库中的conf中的svnserve.conf文件(例：~/Desktop/svn/iOS/conf/svnserve.conf)，将这个文件中以下字段的#号和空格去掉（就是去掉注释）
+4-1.修改基本设置，修改仓库中的conf目录的svnserve.conf文件(例：~/Desktop/svn/iOS/conf/svnserve.conf)，将这个文件中以下字段的#号和空格去掉（就是去掉注释）
     # anon-access = read     就是改成这样:   anon-access = read
     # auth-access = write                   auth-access = write
     # password-db = passwd                  password-db = passwd
     # authz-db = authz                      authz-db = authz
 4-2.把anon-access=read修改为anon-access=none，这一点很重要，不改的话会报错，我太菜不知道为啥，有知道的可以跟我说道说道
-4-3.配置账号密码，修改仓库中的conf中的passwd文件(例：~/Desktop/svn/iOS/conf/passwd，比如我想创建两个账号wzz和wzz2，密码都设为111111)
+4-3.配置账号密码，修改仓库中的conf目录的passwd文件(例：~/Desktop/svn/iOS/conf/passwd，比如我想创建两个账号wzz和wzz2，密码都设为111111)
     在[users]这行下边添加如下内容：
     wzz=111111
     wzz2=111111
     这样我们就添加了两个账号并将密码都设置为了111111
-4-4.设置
+4-4.设置svn用户组和权限，修改仓库中的conf目录下的authz文件（例：~/Desktop/svn/iOS/conf/authz，比如我想创建一个组叫ggg再把我刚才创建的两个账号放进这个组里，并配置权限为可读写）
+    
