@@ -1,0 +1,44 @@
+引入非官方Framework时上传appstore报错解决办法
+报错信息大概是这个样子:
+Unsupported architectures. Your executable contains unsupported architectures '[x86_64, i386]'
+
+说你的framework里包含了x86架构的包，这个应该是framework用来支持模拟器的，x86的包当然不让你上传appstore了。
+
+解决办法:
+点你项目的target，点Build Phases，点"+"号，位于Build Phases左上角，然后点New Run Script Phase。
+之后下边就会出来一栏叫做Run Script的栏目，这东西会在你编译的时候执行，然后就该编辑这栏了
+Shell中填入/bin/sh
+下边空一大块的地方粘贴如下代码:
+
+APP_PATH="${TARGET_BUILD_DIR}/${WRAPPER_NAME}"
+
+# This script loops through the frameworks embedded in the application and
+# removes unused architectures.
+find "$APP_PATH" -name '*.framework' -type d | while read -r FRAMEWORK
+do
+FRAMEWORK_EXECUTABLE_NAME=$(defaults read "$FRAMEWORK/Info.plist" CFBundleExecutable)
+FRAMEWORK_EXECUTABLE_PATH="$FRAMEWORK/$FRAMEWORK_EXECUTABLE_NAME"
+echo "Executable is $FRAMEWORK_EXECUTABLE_PATH"
+
+EXTRACTED_ARCHS=()
+
+for ARCH in $ARCHS
+do
+echo "Extracting $ARCH from $FRAMEWORK_EXECUTABLE_NAME"
+lipo -extract "$ARCH" "$FRAMEWORK_EXECUTABLE_PATH" -o "$FRAMEWORK_EXECUTABLE_PATH-$ARCH"
+EXTRACTED_ARCHS+=("$FRAMEWORK_EXECUTABLE_PATH-$ARCH")
+done
+
+echo "Merging extracted architectures: ${ARCHS}"
+lipo -o "$FRAMEWORK_EXECUTABLE_PATH-merged" -create "${EXTRACTED_ARCHS[@]}"
+rm "${EXTRACTED_ARCHS[@]}"
+
+echo "Replacing original executable with thinned version"
+rm "$FRAMEWORK_EXECUTABLE_PATH"
+mv "$FRAMEWORK_EXECUTABLE_PATH-merged" "$FRAMEWORK_EXECUTABLE_PATH"
+
+done
+
+再往下Show environment variables in build log是默认勾选的，另一个选项不勾选，下边两个input Files和Output Files没东西
+
+OK，再打包上传试试
