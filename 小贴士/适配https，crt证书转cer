@@ -1,0 +1,2 @@
+让后台给你一个.crt的证书，用如下命令来转化成cer然后导入到你的项目中即可
+openssl x509 -in 后台给的.crt -out 想要的名字.cer -outform der
