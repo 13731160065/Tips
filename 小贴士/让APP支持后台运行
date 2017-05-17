@@ -1,0 +1,38 @@
+加入如下代码，你的app就可以支持后台运行了～很简单
+#import "AppDelegate.h"
+static UIBackgroundTaskIdentifier bgTask;
+
+@implementation AppDelegate
+
+- (void)applicationDidEnterBackground:(UIApplication *)application {
+    [self getBackgroundTask];
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application {
+    [self endBackgroundTask];
+}
+
+//获取后台任务
+- (void)getBackgroundTask {
+    
+    NSLog(@"getBackgroundTask");
+    UIBackgroundTaskIdentifier tempTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        //后台任务
+    }];
+    
+    if (bgTask != UIBackgroundTaskInvalid) {
+        [self endBackgroundTask];
+    }
+    
+    bgTask = tempTask;
+    
+    [self performSelector:@selector(getBackgroundTask) withObject:nil afterDelay:120];
+}
+
+//结束后台任务
+- (void)endBackgroundTask {
+    [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+    bgTask = UIBackgroundTaskInvalid;
+}
+
+@end
