@@ -1,4 +1,6 @@
 runtime是oc实现动态语言的底层机制，使用的时候只要引入#import <objc/runtime.h>即可。
+runtime提供了大量的函数来操作类和对象，一般操作类的方法都以class_开头，操作对象的方法以objc_或object_开头。
+
 1.runtime可以动态创建一个类，注意是类而不是对象，方法如下:
   模版:
   Class 你的类 = objc_allocateClassPair([你的类的父类 class], "你的类名", 0);
