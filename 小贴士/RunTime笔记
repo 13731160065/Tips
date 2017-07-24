@@ -1,0 +1,30 @@
+runtime是oc实现动态语言的底层机制，使用的时候只要引入#import <objc/runtime.h>即可。
+1.runtime可以动态创建一个类，注意是类而不是对象，方法如下:
+  模版:
+  Class 你的类 = objc_allocateClassPair([你的类的父类 class], "你的类名", 0);
+  class_addMethod(你的类, @selector(提供外部调用的方法名称，直接写即可，不用写字符串), (IMP)关联内部的c函数, "标识符，随便写");
+  objc_registerClassPair(你的类);
+  
+  例:
+  Class aClass = objc_allocateClassPair([NSArray class], "ABC", 0);
+  class_addMethod(aClass, @selector(ttt2TTT), (IMP)tttTTT, "ssssssffffff");
+  objc_registerClassPair(aClass);
+该类所关联的函数要这样写:
+  模版:
+  void 关联内部的c函数(id 类的实例self, SEL 方法名) {
+  }
+
+  例:
+  void tttTTT(id self, SEL _cmd) {
+    //self是类的实例self，_cmd是调用的方法名
+  }
+调用方法时这样调用:
+  模版:
+  id 实例 = [[你的类 alloc] init];
+  [实例 performSelector:@selector(外部调用的方法名)];
+
+  例:
+  id aObj = [[aClass alloc] init];
+  [aObj performSelector:@selector(ttt2TTT)];
+  
+2.
