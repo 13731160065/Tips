@@ -39,6 +39,18 @@ void objc_registerClassPair ( Class cls );
   id aObj = [[aClass alloc] init];
   [aObj performSelector:@selector(ttt2TTT)];
   
+另外还可以调用如下方法来添加方法和变量
+ class_addMethod(cls, @selector(submethod1), (IMP)imp_submethod1, "v@:");
+ class_replaceMethod(cls, @selector(method1), (IMP)imp_submethod1, "v@:");
+ class_addIvar(cls, "_ivar1", sizeof(NSString *), log(sizeof(NSString *)), "i");
+ 
+ objc_property_attribute_t type = {"T", "@\"NSString\""};
+ objc_property_attribute_t ownership = { "C", "" };
+ objc_property_attribute_t backingivar = { "V", "_ivar1"};
+ objc_property_attribute_t attrs[] = {type, ownership, backingivar};
+ 
+class_addProperty(cls, "property2", attrs, 3);
+
 2.动态创建对象
 动态创建对象的函数如下：
 // 创建类实例
@@ -58,6 +70,12 @@ NSLog(@"%@", [str1 class]);
 //普通创建对象
 id str2 = [[NSString alloc] initWithString:@"test"];
 NSLog(@"%@", [str2 class]);
+
+3.将a类转化为b类
+NSObject *a = [[NSObject alloc] init];
+id newB = object_copy(a, class_getInstanceSize(MyClass.class));
+object_setClass(newB, MyClass.class);
+object_dispose(a);
 
 
 
@@ -172,3 +190,80 @@ void class_setVersion ( Class cls, int version );
 runtime还提供了两个函数来供CoreFoundation的tool-free bridging使用。
 Class objc_getFutureClass ( const char *name );
 void objc_setFutureClass ( Class cls, const char *name );
+
+#实例操作函数
+#针对整个对象进行操作的函数，这类函数包含
+// 返回指定对象的一份拷贝
+id object_copy ( id obj, size_t size );
+ 
+// 释放指定对象占用的内存
+id object_dispose ( id obj );
+
+#针对对象实例变量进行操作的函数，这类函数包含
+// 修改类实例的实例变量的值
+Ivar object_setInstanceVariable ( id obj, const char *name, void *value );
+
+// 获取对象实例变量的值
+Ivar object_getInstanceVariable ( id obj, const char *name, void **outValue );
+
+// 返回指向给定对象分配的任何额外字节的指针
+void * object_getIndexedIvars ( id obj );
+
+// 返回对象中实例变量的值
+id object_getIvar ( id obj, Ivar ivar );
+
+// 设置对象中实例变量的值
+void object_setIvar ( id obj, Ivar ivar, id value );
+
+#针对对象的类进行操作的函数，这类函数包含
+// 返回给定对象的类名
+const char * object_getClassName ( id obj );
+
+// 返回对象的类
+Class object_getClass ( id obj );
+
+// 设置对象的类
+Class object_setClass ( id obj, Class cls );
+
+#获取类定义
+Objective-C动态运行库会自动注册我们代码中定义的所有的类。
+我们也可以在运行时创建类定义并使用objc_addClass函数来注册它们。
+runtime提供了一系列函数来获取类定义相关的信息，这些函数主要包括：
+// 获取已注册的类定义的列表
+int objc_getClassList ( Class *buffer, int bufferCount );
+ 
+// 创建并返回一个指向所有已注册类的指针列表
+Class * objc_copyClassList ( unsigned int *outCount );
+ 
+// 返回指定类的类定义
+Class objc_lookUpClass ( const char *name );
+Class objc_getClass ( const char *name );
+Class objc_getRequiredClass ( const char *name );
+ 
+// 返回指定类的元类
+Class objc_getMetaClass ( const char *name );
+
+例:
+int numClasses;
+Class * classes = NULL;
+ 
+numClasses = objc_getClassList(NULL, 0);
+if (numClasses > 0) {
+    classes = malloc(sizeof(Class) * numClasses);
+    numClasses = objc_getClassList(classes, numClasses);
+ 
+    NSLog(@"number of classes: %d", numClasses);
+ 
+    for (int i = 0; i < numClasses; i++) {
+ 
+        Class cls = classes[i];
+        NSLog(@"class name: %s", class_getName(cls));
+    }
+ 
+    free(classes);
+}
+获取类定义的方法有三个：objc_lookUpClass, objc_getClass和objc_getRequiredClass。
+如果类在运行时未注册，则objc_lookUpClass会返回nil，而objc_getClass会调用类处理回调，
+并再次确认类是否注册，如果确认未注册，再返回nil。
+而objc_getRequiredClass函数的操作与objc_getClass相同，
+只不过如果没有找到类，则会杀死进程。
