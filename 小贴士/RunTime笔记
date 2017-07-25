@@ -1,7 +1,17 @@
 runtime是oc实现动态语言的底层机制，使用的时候只要引入#import <objc/runtime.h>即可。
 runtime提供了大量的函数来操作类和对象，一般操作类的方法都以class_开头，操作对象的方法以objc_或object_开头。
 
-1.runtime可以动态创建一个类，注意是类而不是对象，方法如下:
+1.runtime可以动态创建一个类，动态创建类涉及到以下几个函数:
+// 创建一个新类和元类
+Class objc_allocateClassPair ( Class superclass, const char *name, size_t extraBytes );
+ 
+// 销毁一个类及其相关联的类
+void objc_disposeClassPair ( Class cls );
+ 
+// 在应用中注册由objc_allocateClassPair创建的类
+void objc_registerClassPair ( Class cls );
+
+具体方法如下:
   模版:
   Class 你的类 = objc_allocateClassPair([你的类的父类 class], "你的类名", 0);
   class_addMethod(你的类, @selector(提供外部调用的方法名称，直接写即可，不用写字符串), (IMP)关联内部的c函数, "标识符，随便写");
@@ -29,7 +39,25 @@ runtime提供了大量的函数来操作类和对象，一般操作类的方法�
   id aObj = [[aClass alloc] init];
   [aObj performSelector:@selector(ttt2TTT)];
   
-2.
+2.动态创建对象
+动态创建对象的函数如下：
+// 创建类实例
+id class_createInstance ( Class cls, size_t extraBytes );
+ 
+// 在指定位置创建类实例
+id objc_constructInstance ( Class cls, void *bytes );
+ 
+// 销毁类实例
+void * objc_destructInstance ( id obj );
+
+方法如下:
+//runtime创建对象
+id theObject = class_createInstance(NSString.class, sizeof(unsigned));
+id str1 = [theObject init];
+NSLog(@"%@", [str1 class]);
+//普通创建对象
+id str2 = [[NSString alloc] initWithString:@"test"];
+NSLog(@"%@", [str2 class]);
 
 
 
