@@ -45,9 +45,12 @@ Class class_getSuperclass ( Class cls );
 // 判断给定的Class是否是一个元类
 BOOL class_isMetaClass ( Class cls );
 
+#实例变量大小
 // 获取实例大小
 size_t class_getInstanceSize ( Class cls );
 
+#成员变量(ivars)及属性
+#1.成员变量操作函数，主要包含以下函数
 // 获取类中指定名称实例成员变量的信息
 Ivar class_getInstanceVariable ( Class cls, const char *name );
  
@@ -59,3 +62,85 @@ BOOL class_addIvar ( Class cls, const char *name, size_t size, uint8_t alignment
  
 // 获取整个成员变量列表
 Ivar * class_copyIvarList ( Class cls, unsigned int *outCount );
+
+#2.属性操作函数，主要包含以下函数
+// 获取指定的属性
+objc_property_t class_getProperty ( Class cls, const char *name );
+ 
+// 获取属性列表
+objc_property_t * class_copyPropertyList ( Class cls, unsigned int *outCount );
+ 
+// 为类添加属性
+BOOL class_addProperty ( Class cls, const char *name, const objc_property_attribute_t *attributes, unsigned int attributeCount );
+ 
+// 替换类的属性
+void class_replaceProperty ( Class cls, const char *name, const objc_property_attribute_t *attributes, unsigned int attributeCount );
+
+3.runtime提供了几个函数来确定一个对象的内存区域是否可以被垃圾回收器扫描，以处理strong/weak引用
+const uint8_t * class_getIvarLayout ( Class cls );
+void class_setIvarLayout ( Class cls, const uint8_t *layout );
+const uint8_t * class_getWeakIvarLayout ( Class cls );
+void class_setWeakIvarLayout ( Class cls, const uint8_t *layout );
+//但通常情况下，我们不需要去主动调用这些方法
+
+#方法操作
+// 添加方法
+BOOL class_addMethod ( Class cls, SEL name, IMP imp, const char *types );
+ 
+// 获取实例方法
+Method class_getInstanceMethod ( Class cls, SEL name );
+ 
+// 获取类方法
+Method class_getClassMethod ( Class cls, SEL name );
+ 
+// 获取所有方法的数组
+Method * class_copyMethodList ( Class cls, unsigned int *outCount );
+ 
+// 替代方法的实现
+IMP class_replaceMethod ( Class cls, SEL name, IMP imp, const char *types );
+ 
+// 返回方法的具体实现
+IMP class_getMethodImplementation ( Class cls, SEL name );
+IMP class_getMethodImplementation_stret ( Class cls, SEL name );
+ 
+// 类实例是否响应指定的selector
+BOOL class_respondsToSelector ( Class cls, SEL sel );
+
+class_addMethod的实现会覆盖父类的方法实现，但不会取代本类中已存在的实现，如果本类中包含一个同名的实现，则函数会返回NO。
+与成员变量不同的是，我们可以为类动态添加方法，不管这个类是否已存在。
+如果要修改已存在实现，可以使用method_setImplementation。一个Objective-C方法是一个简单的C函数，它至少包含两个参数—self和_cmd。
+所以，我们的实现函数(IMP参数指向的函数)至少需要两个参数:
+void myMethodIMP(id self, SEL _cmd)
+{
+    //方法实现
+}
+class_getInstanceMethod、class_getClassMethod函数，与class_copyMethodList不同的是，这两个函数都会去搜索父类的实现。
+class_copyMethodList函数，返回包含所有实例方法的数组，如果需要获取类方法，则可以使用class_copyMethodList(object_getClass(cls), &count)(一个类的实例方法是定义在元类里面)。该列表不包含父类实现的方法。outCount参数返回方法的个数。在获取到列表后，我们需要使用free()方法来释放它。
+class_replaceMethod函数，该函数的行为可以分为两种：如果类中不存在name指定的方法，则类似于class_addMethod函数一样会添加方法；如果类中已存在name指定的方法，则类似于method_setImplementation一样替代原方法的实现。
+class_getMethodImplementation函数，该函数在向类实例发送消息时会被调用，并返回一个指向方法实现函数的指针。这个函数会比method_getImplementation(class_getInstanceMethod(cls, name))更快。返回的函数指针可能是一个指向runtime内部的函数，而不一定是方法的实际实现。例如，如果类实例无法响应selector，则返回的函数指针将是运行时消息转发机制的一部分。
+class_respondsToSelector函数，我们通常使用NSObject类的respondsToSelector:或instancesRespondToSelector:方法来达到相同目的
+
+#协议操作
+// 添加协议
+BOOL class_addProtocol ( Class cls, Protocol *protocol );
+ 
+// 返回类是否实现指定的协议
+BOOL class_conformsToProtocol ( Class cls, Protocol *protocol );
+ 
+// 返回类实现的协议列表
+Protocol * class_copyProtocolList ( Class cls, unsigned int *outCount );
+
+class_conformsToProtocol函数可以使用NSObject类的conformsToProtocol:方法来替代。
+class_copyProtocolList函数返回的是一个数组，在使用后我们需要使用free()手动释放。
+
+#版本操作
+// 获取版本号
+int class_getVersion ( Class cls );
+ 
+// 设置版本号
+void class_setVersion ( Class cls, int version );
+
+#其它
+runtime还提供了两个函数来供CoreFoundation的tool-free bridging使用。
+Class objc_getFutureClass ( const char *name );
+void objc_setFutureClass ( Class cls, const char *name );
