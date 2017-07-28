@@ -1,0 +1,43 @@
+/*
+平时用coder归档类的变量的时候，需要把每个变量都设置一个key（这个key可能还需要拼一些东西，具体未测试），这里利用runtime获取变量名加kvc赋值实现归档
+需要引入#import <objc/runtime.h>
+*/
+
+//coder初始化
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    if (self = [super init]) {
+        unsigned int outCount;//变量数
+        Ivar * ivars = class_copyIvarList([self class], &outCount);//获取变量列表ivars是一个Ivar数组
+        for (int i = 0; i < outCount; i ++) {
+            Ivar ivar = ivars[i];//取出第i个Ivar
+            NSString * key = [NSString stringWithUTF8String:ivar_getName(ivar)];//根据Ivar得到变量名字的字符串
+            [self setValue:[aDecoder decodeObjectForKey:key] forKey:key];//利用kvc给变量设置值
+        }
+    }
+    return self;
+}
+
+//coder打包
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    unsigned int outCount;//变量数
+    Ivar * ivars = class_copyIvarList([self class], &outCount);//获取变量列表ivars是一个Ivar数组
+    for (int i = 0; i < outCount; i ++) {
+        Ivar ivar = ivars[i];//取出第i个Ivar
+        NSString * key = [NSString stringWithUTF8String:ivar_getName(ivar)];//根据Ivar得到变量名字的字符串
+        [aCoder encodeObject:[self valueForKey:key] forKey:key];//利用kvc取出变量的值
+    }
+}
+
+//归档自己
+- (void)archiveMySelf {
+    NSString * archiveKey = [[NSString stringWithUTF8String:object_getClassName(self)] stringByAppendingString:@"_archiveKey"];
+    NSData * data = [NSKeyedArchiver archivedDataWithRootObject:self];
+    [[NSUserDefaults standardUserDefaults] setObject:data forKey:archiveKey];
+}
+
+//解归档自己
+- (instancetype)unarchiveMySelf {
+    NSString * archiveKey = [[NSString stringWithUTF8String:object_getClassName(self)] stringByAppendingString:@"_archiveKey"];
+    NSData * data = [[NSUserDefaults standardUserDefaults] objectForKey:archiveKey];
+    return [NSKeyedUnarchiver unarchiveObjectWithData:data];
+}
