@@ -3,3 +3,7 @@
 解决办法是在终端界面输入:svn ls https的svn地址，之后会出现几个选项，输入p，回车，即可。
 其实就是用命令行连接一下svn，提示是否验证https证书，选择p就会忽略该证书。
 我在使用svnx时碰到的，使用cornerstone的话不会有这个问题，会提示一个框，选择继续即可。
+
+错误是这样的
+svn: E170013: Unable to connect to a repository at URL 'https://124.65.182.10/xxxx'
+svn: E230001: Server SSL certificate verification failed: certificate issued for a different hostname, issuer is not trusted
