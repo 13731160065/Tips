@@ -36,7 +36,7 @@
 }
 
 //解归档自己
-- (instancetype)unarchiveMySelf {
++ (instancetype)unarchiveMySelf {
     NSString * archiveKey = [[NSString stringWithUTF8String:object_getClassName(self)] stringByAppendingString:@"_archiveKey"];
     NSData * data = [[NSUserDefaults standardUserDefaults] objectForKey:archiveKey];
     return [NSKeyedUnarchiver unarchiveObjectWithData:data];
