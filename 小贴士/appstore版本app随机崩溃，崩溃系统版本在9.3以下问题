@@ -1,0 +1,57 @@
+这个问题基本是资源中有P3或16位图导致的。
+如何查找P3和16位的图呢？
+1.导出一个ipa包
+2.把导出的ipa后缀改为zip
+3.解压zip，得到一个app包
+4.右键app包显示包内容
+5.在命令行cd app包路径，app包路径可以直接把app包拖进终端来获取
+6.这里边又一个叫做Assets.car的文件，可以使用ls Ass*.*来显示当前目录下是否有该文件
+7.终端调用sudo xcrun --sdk iphoneos assetutil --info 你找到的Assets.car文件 > /tmp/Assets.json
+8.>这个符号是重定向后边的路径可以自己定义比如~/Desktop/Assets.json可以生成到桌面上方便查找
+9.上边命令可以生成一个叫Assets.json的json文件，文件中有图片的信息，注意查看以下文字的"//"注视：
+{
+    "Compression" : "lzvn",
+    "BitsPerSample" : 8,//这里是多少位的图如果是16就是16位的咯，这个是8位的
+    "LayoutDirection" : "0 - Horizontal",
+    "AssetType" : "Image",
+    "ColorModel" : "RGB",
+    "Name" : "connect-17",
+    "PixelWidth" : 930,
+    "Graphics" : "GLES2,0",
+    "Subtype" : 0,
+    "PixelHeight" : 556,
+    "SizeClass Horizontal" : "universal",
+    "EdgeInsets" : "top:0 left:0 bottom:0 right:0",
+    "Scale" : 1,
+    "Memory" : "512MB",
+    "Opaque" : true,
+    "DisplayGamut" : "sRGB",//这个颜色描述文件是sRGB，正常
+    "Idiom" : "universal",
+    "Encoding" : "ARGB",
+    "Image Type" : "kCoreThemeOnePartScale",
+    "SizeClass Vertical" : "universal"
+  },
+  {
+    "Compression" : "lzvn",
+    "BitsPerSample" : 16,//这个就是16位的了，违禁品
+    "LayoutDirection" : "0 - Horizontal",
+    "AssetType" : "Image",
+    "ColorModel" : "RGB",
+    "Name" : "magicmpos",
+    "PixelWidth" : 160,
+    "Graphics" : "GLES2,0",
+    "Subtype" : 0,
+    "PixelHeight" : 160,
+    "SizeClass Horizontal" : "universal",
+    "EdgeInsets" : "top:0 left:0 bottom:0 right:0",
+    "Scale" : 1,
+    "Memory" : "512MB",
+    "Opaque" : false,
+    "DisplayGamut" : "P3",//这个颜色描述文件是P3，有问题
+    "Idiom" : "universal",
+    "Encoding" : "ARGB-16",
+    "Image Type" : "kCoreThemeOnePartScale",
+    "SizeClass Vertical" : "universal"
+  }
+  
+  这时候
