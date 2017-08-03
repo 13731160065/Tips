@@ -15,7 +15,7 @@
     "LayoutDirection" : "0 - Horizontal",
     "AssetType" : "Image",
     "ColorModel" : "RGB",
-    "Name" : "connect-17",
+    "Name" : "connect-17",//图片名
     "PixelWidth" : 930,
     "Graphics" : "GLES2,0",
     "Subtype" : 0,
@@ -37,7 +37,7 @@
     "LayoutDirection" : "0 - Horizontal",
     "AssetType" : "Image",
     "ColorModel" : "RGB",
-    "Name" : "magicmpos",
+    "Name" : "magicmpos",//这个是图片名
     "PixelWidth" : 160,
     "Graphics" : "GLES2,0",
     "Subtype" : 0,
@@ -54,4 +54,8 @@
     "SizeClass Vertical" : "universal"
   }
   
-  这时候
+  这时候只要让UI给你出个正常的图就可以了。
+  他如果不知道怎么出不是p3的图，根据我们这ui说的，把通道关掉生成图就可以，具体我也不太清楚，让他们去解决吧。
+  如何验证这个图是不是P3？
+  每次打包再生成json就太麻烦了，直接右键图（仅限mac），显示简介，这里边就有图片的相关信息，如果是P3的话，里边会有一个"颜色描述文件"项，为P3
+  都改掉基本就没问题了
