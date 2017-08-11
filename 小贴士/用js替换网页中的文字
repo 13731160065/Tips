@@ -1,0 +1,6 @@
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    [webView stringByEvaluatingJavaScriptFromString:@"var str = document.body.innerHTML;"
+     "document.body.innerHTML = str.replace(/可用余额/g,\"用啥用\");"];
+}
+这样一段代码就可以吧网页中的“可用余额”全部替换成“用啥用”
