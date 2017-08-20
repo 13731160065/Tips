@@ -1,0 +1,349 @@
+>>>wzzerror
+NSLog(@"############错误，<#错误信息#>############");
+
+>>>wzz快速创建tf
+#pragma mark - 快速创建tf
+- (UITextField *)creatTFWithView:(UIView *)view titleText:(NSString *)title placeHolderText:(NSString *)placeHolder{
+    UILabel * titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 230*PIX, view.frame.size.height)];
+    [view addSubview:titleLabel];
+    [titleLabel setFont:[UIFont systemFontOfSize:BigFont]];
+    [titleLabel setText:title];
+    [titleLabel setTextAlignment:NSTextAlignmentCenter];
+    
+    UITextField * TFView = [[UITextField alloc] initWithFrame:CGRectMake(CGRectGetMaxX(titleLabel.frame), 0, view.frame.size.width-CGRectGetMaxX(titleLabel.frame), view.frame.size.height)];
+    [view addSubview:TFView];
+    [TFView setPlaceholder:placeHolder];
+    [TFView setFont:[UIFont systemFontOfSize:BigFont]];
+    
+    return TFView;
+}
+
+>>>viewWillDisAppear
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    <#代码#>
+}
+
+>>>viewWillAppear
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    <#代码#>
+}
+
+>>>tableview代理
+#pragma mark - tableView代理方法
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return <#cell number#>;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return <#cell object#>;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    <#this code will be call when cell be selected#>
+}
+
+>>>strong属性
+@property (nonatomic, strong) <#数据类型#> * <#变量名#>;
+
+>>>assign属性
+@property (nonatomic, assign) <#变量类型#> <#变量名#>;
+
+>>>mj模型id变aid
++ (NSDictionary *)mj_replacedKeyFromPropertyName {
+    return @{
+             @"aId":@"id"
+             };
+}
+
+>>>json字符串转对象
+//json字符串转对象
+- (id)objectFromJsonString:(NSString *)jsonString {
+    if (jsonString == nil) {
+        return nil;
+    }
+    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *err;
+    id obj = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&err];
+    if(err) {
+        NSLog(@"json解析失败：%@",err);
+        return nil;
+    }
+    return obj;
+}
+
+>>>对象转json
+//对象转json
+- (NSString *)jsonFromObject:(id)obj {
+    if (obj == nil) {
+        return nil;
+    }
+    NSError * err;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:obj options:0 error:&err];
+    if(err) {
+        NSLog(@"json解析失败：%@",err);
+        return nil;
+    }
+    return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+}
+
+>>>主线程
+dispatch_async(dispatch_get_main_queue(), <#^(void)block#>);
+
+>>>验证码计时器
+#pragma mark - 开启 定时器
+- (void)startJiShiQi:(NSTimer *)senderTimer {
+    
+    // 1. 秒表 ++
+    _miao ++;
+    
+    // 2. 将剩余时间重新发送验证码显示给用户
+    [_getYZMButton setTitle:[NSString stringWithFormat:@"%lus", 60-_miao] forState:UIControlStateNormal];
+    [_getYZMButton setBackgroundColor:[UIColor lightGrayColor]];
+    [_getYZMButton setBackgroundImage:[[UIImage alloc] init] forState:UIControlStateNormal];
+    
+    // 3. 判断是否已到60秒
+    if (_miao == 60) {
+        
+        // 3.1 获取验证重新设置title
+        [_getYZMButton setTitle:@"获取验证码" forState:UIControlStateNormal];
+        [_getYZMButton setBackgroundImage:[UIImage imageNamed:@"yuanjiaojuxing"] forState:UIControlStateNormal];
+        
+        // 3.2 开启获取验证码按钮的交互能力
+        _getYZMButton.userInteractionEnabled = YES;
+        
+        // 3.3 关闭定时器
+        [senderTimer invalidate];
+    }
+    
+}
+
+>>>相机相册
+UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+imagePicker.delegate = self;
+switch (index) {
+            case 1:
+            {
+                //相机
+                //设定sourceType为相机
+                UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypeCamera;
+                //然后判断相机是否可用
+                if (![UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]) {
+                    [MBProgressHUD showError:@"您的相机不可用"];
+                    return;
+                }
+                imagePicker.sourceType = sourceType;
+                [_superVC presentViewController:imagePicker animated:YES completion:nil];//进入照相界面
+            }
+                break;
+            case 2:
+            {
+                //相册
+                if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+                    imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+                    imagePicker.mediaTypes = [UIImagePickerController availableMediaTypesForSourceType:imagePicker.sourceType];
+                }
+                imagePicker.mediaTypes = @[@"public.image"];
+                [_superVC presentViewController:imagePicker animated:YES completion:nil];
+            }
+                break;
+                
+            default:
+                break;
+        }
+
+
+>>>随机颜色
+CGFloat red = arc4random()%256/255.0f;
+CGFloat green = arc4random()%256/255.0f;
+CGFloat blue = arc4random()%256/255.0f;
+
+
+>>>手势
+#pragma mark------平移手势
+- (void)TapGR:(UIPanGestureRecognizer*)tap{
+    CGPoint point = [tap translationInView:tap.view];
+    CGPoint tempCenter = tap.view.center;
+    tempCenter.x += point.x;
+    tempCenter.y += point.y;
+    tap.view.center = tempCenter;
+    [tap setTranslation:CGPointMake(0, 0) inView:tap.view];
+}
+
+#pragma mark-------捏合手势
+- (void)pinchTapGR:(UIPinchGestureRecognizer *)tap{
+    tap.view.transform = CGAffineTransformScale(tap.view.transform, tap.scale, tap.scale);
+    tap.scale = 1.0;//以上一次的缩放比例为准
+}
+
+#pragma mark-------旋转手势
+- (void)rotationTapGR:(UIRotationGestureRecognizer *)tap{
+    tap.view.transform = CGAffineTransformRotate(tap.view.transform, tap.rotation);
+    tap.rotation = 0;//清空上次旋转的角度
+}
+
+>>>时间戳转时间
+NSString *time = <#时间字符串#>;
+NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+[formatter setDateStyle:NSDateFormatterMediumStyle];
+[formatter setTimeStyle:NSDateFormatterShortStyle];
+[formatter setDateFormat:@"yyyy-MM-dd"];
+NSDate *confromTimesp = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)[time intValue]];
+NSString *confromTimespStr = [formatter stringFromDate:confromTimesp];
+<#时间接收者#>.text = confromTimespStr;
+
+>>>请求中的东西全转字符串
+- (NSDictionary *)turnToString:(NSDictionary *)aDic {
+    NSMutableDictionary * dic = [NSMutableDictionary dictionaryWithDictionary:aDic];
+    NSArray * keysArr = [dic allKeys];
+    NSArray * valuesArr = [dic allValues];
+    [keysArr enumerateObjectsUsingBlock:^(NSString * _Nonnull aKey, NSUInteger idx, BOOL * _Nonnull stop) {
+        id aValue = valuesArr[idx];
+        if ([aValue isKindOfClass:[NSDictionary class]]) {
+            dic[aKey] = [self turnToString:dic];
+        } else if ([aValue isKindOfClass:[NSArray class]]) {
+            NSMutableArray * arrr = [NSMutableArray array];
+            [aValue enumerateObjectsUsingBlock:^(id  _Nonnull aaa, NSUInteger idx, BOOL * _Nonnull stop) {
+                if ([aaa isKindOfClass:[NSDictionary class]]) {
+                    [arrr addObject:[self turnToString:aaa]];
+                } else if ([aaa isKindOfClass:[NSArray class]]) {
+                    [arrr addObject:[self turnToString:aaa]];
+                } else {
+                    [arrr addObject:aaa];
+                }
+                dic[aKey] = arrr;
+            }];
+        } else {
+            if ([aValue isKindOfClass:[NSNull class]]) {
+                dic[aKey] = @"";
+            } else {
+                dic[aKey] = [NSString stringWithFormat:@"%@", aValue];
+            }
+        }
+    }];
+    
+    return dic;
+}
+
+>>>切圆角
+[<#控件#>.layer setMasksToBounds:YES];
+[<#控件#>.layer setCornerRadius:5];
+[<#控件#>.layer setBorderColor:[UIColor whiteColor].CGColor];
+[<#控件#>.layer setBorderWidth:1];
+
+>>>快速创建window
+self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+[self.window setRootViewController:<#(UIViewController * _Nullable)#>];
+[self.window makeKeyAndVisible];
+
+>>>快速创建tableview
+mainTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, ScreenWidth, ScreenHeight-64) style:UITableViewStylePlain];
+[self.view addSubview:mainTableView];
+[mainTableView setDelegate:self];
+[mainTableView setDataSource:self];
+[mainTableView registerNib:[UINib nibWithNibName:@"WZZMyDiSuoCell" bundle:nil] forCellReuseIdentifier:@"cell"];
+[mainTableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+
+>>>快速创建c++类
+class <#类名#> {
+private:
+protected:
+public:
+};
+
+>>>可变函数
+<#返回值#> <#函数名#>(int argCount, ...) {
+    va_list aList;//初始化一个栈式列表
+    va_start(aList, argCount);//初始化栈顶指针
+    
+    while (argCount--) {
+        <#变量类型#> arg = va_arg(aList, <#变量类型#>);
+        <#代码段#>
+    }
+    
+    va_end(aList);//将指针无效化
+    return <#返回值#>;
+}
+
+>>>读取文件大小
+// 取文件大小
+long <#变量#> = [[[NSFileManager defaultManager] attributesOfItemAtPath:<#文件路径#> error:nil] fileSize];
+
+>>>第n次打开检测
+//注册tip或＋1
+- (void)registerTip {
+    [[NSUserDefaults standardUserDefaults] setInteger:([[NSUserDefaults standardUserDefaults] integerForKey:tipKey] ? [[NSUserDefaults standardUserDefaults] integerForKey:tipKey]+1 : 1) forKey:tipKey];
+}
+
+//检测
+- (BOOL)canIShowTip {
+    return (([[NSUserDefaults standardUserDefaults] integerForKey:tipKey]>TIPCHECKNUM)?NO:YES);
+}
+
+>>>处理带有特殊字符的jsondata
+- (NSData *)handleStrWithJsonData:(NSData *)jsonData {
+    /*
+     &lt; 	< 	小于号或显示标记
+     &gt; 	> 	大于号或显示标记
+     &amp; 	& 	可用于显示其它特殊字符
+     &quot; 	“ 	引号
+     &reg; 	® 	已注册
+     &copy; 	© 	版权
+     &trade; 	™ 	商标
+     &ensp; 	  	半个空白位
+     &emsp; 	  	一个空白位
+     &nbsp;
+     */
+    
+    NSDictionary * dic = @{
+                           @"&lt;":@"<",
+                           @"&gt;":@">",
+                           @"&amp;":@"&",
+                           @"&quot;":@"\"",
+                           @"&reg;":@"®",
+                           @"&copy;":@"©",
+                           @"&trade;":@"™",
+                           @"&ensp;":@"",
+                           @"&emsp;":@"",
+                           @"&nbsp;":@"",
+                           @"\n":@"",
+                           @"\t":@"",
+                           @"\r":@""
+                           };
+    __block NSString * str = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    [[dic allKeys] enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        str = [[str componentsSeparatedByString:obj] componentsJoinedByString:[dic allValues][idx]];
+    }];
+    return [str dataUsingEncoding:NSUTF8StringEncoding];
+}
+
+>>>炸弹2
+NSString *currentTime = @"";
+    NSDate *date = [[NSDate alloc] init];
+    NSDateFormatter *df=[[NSDateFormatter alloc]init];
+    [df setDateFormat:@"yyyyMMdd"];
+    currentTime = [df stringFromDate:date];
+    
+    NSLog(@"----%d", [currentTime intValue]);
+    if ([currentTime intValue] > 20160809) {
+        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"版本已过期" message:@"测试版本时间已过期，请联系开发人员" delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+        [alert show];
+//        NSArray * arr = @[];
+//        arr = arr[100];
+        return NO;
+    }
+
+>>>炸弹
+NSString *currentTime = @"";
+    NSDate *date = [[NSDate alloc] init];
+    NSDateFormatter *df=[[NSDateFormatter alloc]init];
+    [df setDateFormat:@"yyyyMMdd"];
+    currentTime = [df stringFromDate:date];
+    
+    NSLog(@"----%d", [currentTime intValue]);
+    if ([currentTime intValue] > 20151225) {
+        NSArray * arr = @[];
+        arr = arr[100];
+        return NO;
+    }
