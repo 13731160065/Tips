@@ -1,0 +1,32 @@
+直接上代码，用！标志的代码就是关键代码，强制转换语言总共分3步
+1.保存设备现有语法
+2.强转成简体中文
+3.恢复设备现有语法
+- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
+    //获取经纬度
+    NSLog(@"纬度:%f",newLocation.coordinate.latitude);
+    NSLog(@"经度:%f",newLocation.coordinate.longitude);
+    //停止位置更新
+    [manager stopUpdatingLocation];
+
+    //!!!!!保存 Device 的现语言 (英语 法语 ，，，)
+    NSMutableArray *userDefaultLanguages = [[NSUserDefaults standardUserDefaults] objectForKey:@"AppleLanguages"];
+    
+    //!!!!!强制 成 简体中文
+    [[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:@"zh-hans",nil] forKey:@"AppleLanguages"];
+
+    //逆地理编码
+    CLGeocoder * geoCoder = [[CLGeocoder alloc] init];
+    [geoCoder reverseGeocodeLocation:newLocation completionHandler:^(NSArray *placemarks, NSError *error) {
+        if(!error){
+            for (CLPlacemark * placemark in placemarks) {
+                NSString *cityName = [placemark locality];
+                NSLog(@"cityName===》%@", cityName);//这里可看到输出为中文
+                break;
+            }
+        }
+        
+        //!!!!!还原Device 的语言
+        [[NSUserDefaults standardUserDefaults] setObject:userDefaultLanguages forKey:@"AppleLanguages"];
+    }];
+}
