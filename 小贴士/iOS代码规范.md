@@ -29,14 +29,20 @@
 
 例如:
 
-$[mvc](https://github.com/13731160065/Tips/raw/master/images/代码规范/mvc.png)
+![mvc](https://github.com/13731160065/Tips/raw/master/images/代码规范/mvc.png)
 
 代码中
 ---------------------
-一、头部文件
-1.import一类的放一块，用换行符隔开
+
+**一、头部文件**
+
+1.同一类的放一起，import的放一起，define放一起，const放一起，中间以逗号隔开
 2.宏定义用大写英文如果多个单词用下划线分割，局部宏定义用该类名加下划线加名称来定义，防止宏定义的重复
 3.宏定义数值对其
+
+例如:
+
+![import](https://github.com/13731160065/Tips/raw/master/images/代码规范/import.png)
 
 二、注释
 4..m中自定义的方法名要加普通注释，.h中的变量名和方法名都要加注释，并且要加文档注释
