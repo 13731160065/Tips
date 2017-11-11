@@ -7,31 +7,29 @@
 
 例如:
 
-WZZHomeVC.h
+`WZZHomeVC.h`
 
-WZZHomeVC.m
+`WZZHomeVC.m`
 
 2.文件名、类名用纯英文或纯拼音表示
 
 例如:
 
-WZZHomeViewController.h
+`WZZHomeViewController.h`
 
-WZZPhoneNumberHandler.h
+`WZZPhoneNumberHandler.h`
 
-WZZDaiJiKaVC.h
+`WZZDaiJiKaVC.h`
 
 **二、文件夹**
 
 1.文件夹名用中文表示，名字贴切，和物理文件名一致。建议在文件夹中创建完再把文件夹拖进来
 
-例如:
-
-
-
 2.文件夹结构，页面部分使用MVC模式分文件夹，分类从大分类到小分类到具体某个页面的MVC文件夹
 
 例如:
+
+$[mvc](https://github.com/13731160065/Tips/raw/master/images/代码规范/mvc.png)
 
 代码中
 ---------------------
