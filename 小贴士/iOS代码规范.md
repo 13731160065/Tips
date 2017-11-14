@@ -57,7 +57,7 @@
 4.见以下示例：
 
 /**
-
+\
 	辅导师列表接口
 
 	@param categoryId 擅长分类Id
@@ -69,43 +69,25 @@
  */
  
 + (void)httpGetTutorListCateoryId:(NSString*)categoryId
-
+\
 		       withLevel:(NSString*)level
-		       
+		       \
 		         withSex:(NSString*)sex
 			 
 5.网络解析中的类型要在代码注释中写清楚功能
 
   例如接口中有一个type:
-  
+ 
   /**
   	type:
   
   	1.商家 
   
  	2.个人
+	
 	*/
 
 9.有限数量状态的类型要用枚举来表示，不要用字符串比对或01234来定义值
-
-typedef NS_ENUM(NSInteger, UIButtonType) {
-
-    UIButtonTypeCustom = 0,                         // no button type
-    
-    UIButtonTypeSystem NS_ENUM_AVAILABLE_IOS(7_0),  // standard system button
-    
-    UIButtonTypeDetailDisclosure,
-    
-    UIButtonTypeInfoLight,
-    
-    UIButtonTypeInfoDark,
-    
-    UIButtonTypeContactAdd,
-    
-    UIButtonTypeRoundedRect = UIButtonTypeSystem,   // Deprecated, use UIButtonTypeSystem instead
-    
-};
-
 
 **三、代码编写**
 
@@ -130,9 +112,12 @@ NSString * aImageNameString;
 5.同一类的方法放到一起，不同类之间用#pragma mark - 分开（#pragma mark - 点击事件，加－和不加－是有区别的，注意使用时的区别）
 
 四、全局性
-1.建议将网络请求解析数据的功能封装到一个单独类中
+
+1.将网络请求解析数据的功能封装到一个单独类中，并且在网络请求类之上再进行一层封装以备后用
+
 2.NSUserDefault的key使用宏定义，全局统一放在一个文件中以避免重复
-3.非特殊情况不要用单例、存本地、通知的方式传值，尽量多用正向赋值、block和代理。
+
+3.非特殊情况**不要用单例、存本地、通知的方式传值**，尽量多用正向赋值、block和代理。
 
 五、其他
 暂无
