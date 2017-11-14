@@ -53,42 +53,14 @@
 2.参数过长回车换行
 
 3.参数名都写在注释中
-
-4.见以下示例：
-
-/**
-\
-	辅导师列表接口
-
-	@param categoryId 擅长分类Id
-
-	@param level      级别：1辅导师 2专家
-
-	@param sex        性别：1男 0女
- 
- */
- 
-+ (void)httpGetTutorListCateoryId:(NSString*)categoryId
-\
-		       withLevel:(NSString*)level
-		       \
-		         withSex:(NSString*)sex
 			 
-5.网络解析中的类型要在代码注释中写清楚功能
+4.网络解析中的类型要在代码注释中写清楚功能
 
-  例如接口中有一个type:
- 
-  /**
-  \
-  	type:
-  
-  	1.商家 
-  
- 	2.个人
-	
-	*/
+见以下示例：
 
-9.有限数量状态的类型要用枚举来表示，不要用字符串比对或01234来定义值
+![注释](https://github.com/13731160065/Tips/raw/master/images/代码规范/zhushi.png)
+
+5.有限数量状态的类型要用枚举来表示，不要用字符串比对或01234来定义值
 
 **三、代码编写**
 
