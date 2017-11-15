@@ -84,6 +84,22 @@ NSString * aImageNameString;
 
 5.同一类的方法放到一起，不同类之间用#pragma mark - 分开（#pragma mark - 点击事件，加－和不加－是有区别的，注意使用时的区别）
 
+6.相同功能代码放在一起，不同功能代码加回车隔开，不要加太多回车，代码编写要紧密并且分段清晰，不要频繁回车换行
+
+![正确代码块](https://github.com/13731160065/Tips/raw/master/images/代码规范/codeblockyes.png)
+![错误代码块](https://github.com/13731160065/Tips/raw/master/images/代码规范/codeblockno.png)
+
+7.定义方法，写语句时注意代码格式，变量、方法、保留字及代码之间用空格分隔，参数与变量之间不需要用空格分隔
+
+![代码编写](https://github.com/13731160065/Tips/raw/master/images/代码规范/func.png)
+![代码编写](https://github.com/13731160065/Tips/raw/master/images/代码规范/if.png)
+![代码编写](https://github.com/13731160065/Tips/raw/master/images/代码规范/for.png)
+![代码编写](https://github.com/13731160065/Tips/raw/master/images/代码规范/while.png)
+
+8.运算符中，==、<、>、&&、||之间用空格分隔，普通运算符之间不用分隔，处理逻辑运算时多加括号使逻辑判断的优先级更清晰
+
+![运算符](https://github.com/13731160065/Tips/raw/master/images/代码规范/opop.png)
+
 **四、全局性**
 
 1.将网络请求解析数据的功能封装到一个单独类中，并且在网络请求类之上再进行一层封装以备后用
