@@ -1,5 +1,5 @@
 nm libxxx.a nm命令可以列出该.a中所引用的库文件
-objdump -S libxxx.o 可以反汇编成汇编语言
+objdump -S libxxx.o 或者 objdump -S libxxx.a 可以反汇编成汇编语言
 ar -x libxxx.a 可将.a分解为链接前文件.o
 知道以上这些后你就可以反汇编一个.a试试了
 但还需要注意一点，.a可能是多个平台的所以你还需要一些其他命令来区分他是什么平台，否则可能会报一个类似xxx.a is a fat file (use libtool(1) or lipo(1) and ar(1) on it)这样的错误
