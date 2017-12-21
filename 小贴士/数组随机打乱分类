@@ -1,0 +1,15 @@
+#import "NSMutableArray+WZZRandomValue.h"
+
+@implementation NSMutableArray (WZZRandomValue)
+
+- (void)makeValuesRandom {
+    NSMutableArray * otherArr = [NSMutableArray array];
+    for (int i = 0; i < self.count; i++) {
+        NSInteger randomIndex = arc4random()%(self.count-i);
+        [otherArr addObject:self[randomIndex]];
+        [self removeObjectAtIndex:randomIndex];
+    }
+    [self addObjectsFromArray:otherArr];
+}
+
+@end
