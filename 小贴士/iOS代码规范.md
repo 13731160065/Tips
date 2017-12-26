@@ -101,6 +101,7 @@ NSString * aImageNameString;
 ![运算符](https://github.com/13731160065/Tips/raw/master/images/代码规范/opop.png)
 
 9.写方法时需要以以下格式，-或+后边加一个空格，方法名以小写字母开头
+
 - (void)abc:(NSString *)str1 bcd:(NSString *)str2;
 
 10.单例获取实例方法需要以share、default开头
