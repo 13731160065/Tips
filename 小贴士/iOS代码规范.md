@@ -78,7 +78,7 @@ NSString * aImageNameString;
 
 例如:
 
-**sd_**setImageWithURL
+sd_setImageWithURL
 
 4.功能不同的代码块必须用换行分开
 
