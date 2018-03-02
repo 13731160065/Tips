@@ -1,0 +1,12 @@
+//初始化语音合成器
+AVSpeechSynthesizer *mySpeech=[[AVSpeechSynthesizer alloc]init];
+//使用中文
+AVSpeechSynthesisVoice *myLanguage=[AVSpeechSynthesisVoice voiceWithLanguage:@"zh-CN"];
+//想要转换的文字
+AVSpeechUtterance *myUtterance=[[AVSpeechUtterance alloc]initWithString:@"吃葡萄不吐葡萄皮"];
+myUtterance.rate=AVSpeechUtteranceDefaultSpeechRate;//音速
+myUtterance.volume=1;//音量
+myUtterance.pitchMultiplier=1;//音调
+myUtterance.postUtteranceDelay=1;//播放下一句前停顿
+myUtterance.voice=myLanguage;
+[mySpeech speakUtterance:myUtterance];
