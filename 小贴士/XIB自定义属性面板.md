@@ -22,3 +22,11 @@ IB_DESIGNABLE
 ## 2.实时渲染效果
 
 加了属性还不够，修改属性看不到效果不太爽，其实在视图的drawRect方法里修改属性对应的值即可
+
+## 3.效果展示
+
+![t1](https://github.com/13731160065/Tips/raw/master/images/自定义xib属性面板/xib1.png)
+
+![t2](https://github.com/13731160065/Tips/raw/master/images/自定义xib属性面板/xib2.png)
+
+![t3](https://github.com/13731160065/Tips/raw/master/images/自定义xib属性面板/xib3.png)
