@@ -4,7 +4,7 @@
 
 ## 1.自定义属性面板
 
-只需在类的@interface上方声明一个IB_DESIGNABLE，然后在你要暴露在xib中的属性前边声明一个IBInspectable即可实现。大概是下边这样的
+只需在类的@interface上方声明一个IB_DESIGNABLE`(可以实时渲染)`，然后在你要暴露在xib中的属性前边声明一个IBInspectable`(可以显示属性)`即可实现。大概是下边这样的
 
 ```
 
