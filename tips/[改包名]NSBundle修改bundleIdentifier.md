@@ -1,5 +1,6 @@
-NSBundle+changeBundleId.h文件
+# NSBundle+changeBundleId.h文件
 
+```
 //
 //  NSBundle+changeBundleId.h
 //  fff3
@@ -20,9 +21,11 @@ NSBundle+changeBundleId.h文件
 - (void)changeBundleIdentifier:(NSString *)bundleId;
 
 @end
+```
 
-NSBundle+changeBundleId.m文件
+# NSBundle+changeBundleId.m文件
 
+```
 //
 //  NSBundle+changeBundleId.m
 //  fff3
@@ -68,3 +71,4 @@ NSBundle+changeBundleId.m文件
 }
 
 @end
+```
